@@ -247,6 +247,10 @@
                     this.$message.error("导入Excel失败");
                 }
                 this.findPage();
+                this.findPage();
+                this.findPage();
+                this.findPage();
+                this.findPage();
             },
             //导出按钮
             exportExcel() {
