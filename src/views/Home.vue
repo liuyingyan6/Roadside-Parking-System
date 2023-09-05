@@ -38,6 +38,7 @@
                         unique-opened
                         :collapse="isCollapse"
                         :collapse-transition="false">
+
                     <el-submenu :index="p.id + ''" v-for="p in menuList" :key="p.id">
                         <template slot="title">
                             <i class="el-icon-menu"></i>
@@ -47,12 +48,14 @@
                                 :index="children.url+''"
                                 v-for="children in p.children"
                                 :key="children.id">
+
                             <template slot="title">
                                 <i class="el-icon-location"></i>
                                 <span>{{children.name}}</span>
                             </template>
                         </el-menu-item>
                     </el-submenu>
+
                 </el-menu>
             </el-aside>
             <el-main>
@@ -88,16 +91,12 @@
                 this.$router.push("/Login");
             },
             loadMenus() {
-                let id = localStorage.getItem("id");
 
 
-
-                // this.$axios.get('/urlPermission/findPermission/1').then(res => {
-                //     console.log("{}",res)
-                //     this.menuList = res.datas;
-                // })
-                urlPermission.findPermission(1).then(res => {
-                    this.menuList = res.datas;
+                let managerId = localStorage.getItem("id")
+                console.log(managerId)
+                urlPermission.findPermission(managerId).then(res => {
+                    this.menuList = res.data;
                 })
             }
         },

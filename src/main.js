@@ -13,9 +13,6 @@ import axios from 'axios'
 //SpringBoot运营端的访问路径
 axios.defaults.baseURL = "http://localhost:9090/"
 
-// import './uilts/requst'
-
-
 Vue.prototype.$axios = axios;
 
 

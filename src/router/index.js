@@ -13,12 +13,12 @@ const routes = [
         component: Login
     },
     {
-        path: '/Login',
+        path: '/login',
         name: 'Login',
         component: Login
     },
     {
-        path: '/Home',
+        path: '/home',
         name: 'Home',
         component: Home,
         children: [
@@ -38,25 +38,25 @@ const router = new VueRouter({
     routes
 })
 
-//前置守卫：运行在路由跳转之前
-// router.beforeEach((to, form, next) => {
-//     console.log("跳转路由之前，执行……………………");
-//     let path = to.path;
-//     if (path == '/' || path == '/Login') {
-//         next();
-//         return;//代码到此结束，不要继续向下执行
-//     }
-//     let id = localStorage.getItem("id");
-//     if (!id) {
-//         next("/");//没有登录，就定位到登录页面上去
-//     } else {
-//         next();//放行
-//     }
-// })
-// //后置守卫：运行在路由跳转之后
-// router.afterEach((to, form, next) => {
-//     console.log("跳转路由之后，执行……………………");
-// })
+// 前置守卫：运行在路由跳转之前
+router.beforeEach((to, form, next) => {
+    console.log("跳转路由之前，执行……………………");
+    let path = to.path;
+    if (path == '/' || path == '/Login') {
+        next();
+        return;//代码到此结束，不要继续向下执行
+    }
+    let id = localStorage.getItem("id");
+    if (!id) {
+        next("/");//没有登录，就定位到登录页面上去
+    } else {
+        next();//放行
+    }
+})
+//后置守卫：运行在路由跳转之后
+router.afterEach((to, form, next) => {
+    console.log("跳转路由之后，执行……………………");
+})
 
 
 export default router
