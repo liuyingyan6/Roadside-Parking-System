@@ -66,23 +66,22 @@
                 this.$refs.loginForm.validate(valid => {
                     //完成页面校验
                     if (!valid) return;
-                     this.$axios.post('/manager/login',this.loginForm).then(res=>{
-                         console.log({},res);
-                         if(res.code == 200){
-                             this.$message.success("登录成功！");
-                             //存储大小令牌
-                             localStorage.setItem("accessToken",res.data.accessToken);
-                             localStorage.setItem("refreshToken",res.data.refreshToken);
-                             localStorage.setItem("id",res.data.id);
-                             localStorage.setItem("currentUser",res.data.currentUser);
-                             //跳转页面
-                             setTimeout(()=>{
+                    this.$axios.post('/manager/login',this.loginForm).then(res=>{
+                        if(res.code == 200){
+                            this.$message.success("登录成功！");
+                            //存储大小令牌
+                            localStorage.setItem("accessToken",res.data.accessToken);
+                            localStorage.setItem("refreshToken",res.data.refreshToken);
+                            localStorage.setItem("id",res.data.id);
+                            localStorage.setItem("currentUser",res.data.currentUser);
+                            //跳转页面
+                            setTimeout(()=>{
                                 this.$router.push("/home");//跳转页面
-                             },1000)
-                         }else{
-                             this.$message.error(res.msg);
-                         }
-                     })
+                            },1000)
+                        }else{
+                            this.$message.error(res.msg);
+                        }
+                    })
                 });
             }
         }
