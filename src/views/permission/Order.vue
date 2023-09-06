@@ -368,9 +368,9 @@ export default {
           carNumber: this.param.carNumber
         }
       }).then(res => {
-        console.log("", res.data.records);
+        console.log("{}",res)
+        this.roleList = res.data.list;
         this.total = res.data.total;
-        this.roleList = res.data.records;
       });
     },
 
