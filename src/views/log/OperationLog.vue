@@ -5,7 +5,7 @@
         <el-breadcrumb separator-class="el-icon-arrow-right">
           <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
           <el-breadcrumb-item>日志管理</el-breadcrumb-item>
-          <el-breadcrumb-item>登录日志</el-breadcrumb-item>
+          <el-breadcrumb-item>操作日志</el-breadcrumb-item>
         </el-breadcrumb>
       </el-card>
     </el-row>
@@ -13,10 +13,11 @@
     <el-card>
       <!--信息表单-->
       <el-table :data="logList" border stripe>
-        <el-table-column label="时间" prop="createTime"></el-table-column>
+        <el-table-column label="编号" prop="id"></el-table-column>
+        <el-table-column label="操作者" prop="userId"></el-table-column>
+        <el-table-column label="操作日期" prop="createTime"></el-table-column>
         <el-table-column label="IP" prop="ip"></el-table-column>
-        <el-table-column label="地区" prop="location"></el-table-column>
-        <el-table-column label="浏览器" prop="browser"></el-table-column>
+        <el-table-column label="操作记录" prop="record"></el-table-column>
       </el-table>
 
       <!--分页插件-->
@@ -44,7 +45,7 @@ export default {
   },
   methods: {
     getLogList() {
-      this.$axios.get("/login-log/getPage", {
+      this.$axios.get("/operation-log/getPage", {
         params: {
           pageNum: this.pageNum,
           pageSize: this.pageSize,
