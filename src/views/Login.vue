@@ -10,9 +10,7 @@
                     :model="loginForm"
                     :rules="loginFormRules"
                     label-width="0px"
-                    class="login_form"
-            >
-
+                    class="login_form">
                 <el-form-item prop="userCode">
                     <el-input prefix-icon="el-icon-user" placeholder="用户名" v-model="loginForm.userCode"></el-input>
                 </el-form-item>
@@ -67,7 +65,7 @@
                     //完成页面校验
                     if (!valid) return;
                     this.$axios.post('/manager/login',this.loginForm).then(res=>{
-                        console.log({},res);
+                        //console.log({},res);
                         if(res.code == 200){
                             this.$message.success("登录成功！");
                             //存储大小令牌
@@ -80,7 +78,7 @@
                                 this.$router.push("/home");//跳转页面
                             },1000)
                         }else{
-                            this.$message.error(res.msg);
+                            this.$message.error(res.message);
                         }
                     })
                 });

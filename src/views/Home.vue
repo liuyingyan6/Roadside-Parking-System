@@ -91,8 +91,6 @@
                 this.$router.push("/Login");
             },
             loadMenus() {
-
-
                 let managerId = localStorage.getItem("id")
                 console.log(managerId)
                 urlPermission.findPermission(managerId).then(res => {
@@ -106,6 +104,7 @@
         }
     };
 </script>
+
 <style lang="less" scoped>
     .el-header {
         background-color: #373d41;
