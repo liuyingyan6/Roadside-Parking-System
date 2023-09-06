@@ -4,8 +4,6 @@
             <el-card shadow="always">
                 <el-breadcrumb separator-class="el-icon-arrow-right">
                     <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-                    <el-breadcrumb-item>基础信息管理</el-breadcrumb-item>
-                    <el-breadcrumb-item>车辆信息</el-breadcrumb-item>
                 </el-breadcrumb>
             </el-card>
         </el-row>
@@ -13,13 +11,18 @@
         <el-row>
             <el-card shadow="always">
                 <el-row>
-                    <el-form :inline="true" :model="param" >
+                    <el-form :inline="true" :model="param">
                         <el-form-item label="车牌号">
-                            <el-input v-model="param.carNumber" placeholder="请输入车牌号"></el-input>
+                            <el-input v-model="param.name" placeholder="请输入巡检员名称"></el-input>
                         </el-form-item>
-                        <el-form-item>
-                            <el-button type="primary" icon="el-icon-search" @click="findPage">查询</el-button>
+                        <el-form-item label="手机号码">
+                            <el-input v-model="param.phone" placeholder="手机号码"></el-input>
                         </el-form-item>
+                        <el-form-item label="管理路段">
+                            <el-input v-model="param.roadName" placeholder="管理路段"></el-input>
+                        </el-form-item>
+                        <el-button type="primary" icon="el-icon-search" @click="findPage">查询</el-button>
+                        <el-button @click="replacement()" type="info" icon="el-icon-refresh">重置</el-button>
                     </el-form>
                     <div>
                         <el-upload style="display: inline;margin-right: 10px"
@@ -48,22 +51,32 @@
                             width="55">
                     </el-table-column>
                     <el-table-column
-                            prop="carNumber"
-                            label="车牌号"
+                            prop="name"
+                            label="巡检员名称"
                             width="120">
                     </el-table-column>
                     <!-- 数据列 prop属性名 label显示列名  -->
                     <el-table-column
-                            prop="carUse"
-                            label="用途"
+                            prop="phone"
+                            label="手机号码"
                             width="120">
                     </el-table-column>
                     <el-table-column
-                            prop="dateRegistration"
-                            label="上牌日期"
-                            width="200">
-                        <template slot-scope="scope">{{ scope.row.dateRegistration }}</template>
+                            prop="roadName"
+                            label="管理路段"
+                            width="120">
                     </el-table-column>
+                    <el-table-column
+                            prop="dutyTime"
+                            label="执勤时间"
+                            width="120">
+                    </el-table-column>
+                    <el-table-column
+                            prop="order"
+                            label="订单完成率"
+                            width="120">
+                    </el-table-column>
+
                     <el-table-column
                             prop="state"
                             label="状态"
@@ -71,20 +84,22 @@
                         <template slot-scope="scope">
                             <el-tag
                                     :type="scope.row.state === 1 ? 'success' : 'primary'"
-                                    disable-transitions>{{scope.row.state == 1 ? "闲置" : "租赁"}}
+                                    disable-transitions>{{scope.row.state == 1 ? "正常" : "异常"}}
                             </el-tag>
                         </template>
                     </el-table-column>
                     <el-table-column
-                            prop="typeName"
-                            label="车辆类型">
+                            prop="createTime"
+                            label="创建时间"
+                            width="200">
+                        <template slot-scope="scope">{{ scope.row.createTime }}</template>
                     </el-table-column>
                     <el-table-column label="操作">
                         <template slot-scope="scope">
                             <el-button-group>
                                 <el-button
                                         type="primary" icon="el-icon-view" plain
-                                        @click="handleView(scope.$index,scope.row)">查看
+                                        @click="handleView(scope.$index,scope.row)">详情
                                 </el-button>
                                 <el-button
                                         type="success" icon="el-icon-edit" plain
@@ -104,9 +119,9 @@
                                background
                                @size-change="handleSizeChange"
                                @current-change="handleCurrentChange"
-                               :current-page="param.pageNum"
+                               :current-page="pageNum"
                                :page-sizes="[3, 5, 10, 20]"
-                               :page-size="param.pageSize"
+                               :page-size="pageSize"
                                layout="total, sizes, prev, pager, next, jumper"
                                :total="tableData.total">
                 </el-pagination>
@@ -175,6 +190,8 @@
     </div>
 </template>
 <script>
+    import inspector from '@/api/inspector'
+
     export default {
         data() {
             return {
@@ -190,10 +207,7 @@
                 //添加的宽度
                 formLabelWidth: '120px',
                 //分页查询提交的参数
-                param: {
-                    pageNum: 1,
-                    pageSize: 5
-                },
+                param: {},
                 //显示的属性
                 tableData: {},
                 //显示车辆类型
@@ -203,20 +217,39 @@
                 carUses: [],
                 //复选框
                 multipleSelection: [],
+                pageNum: 1,
+                pageSize: 5
             }
         },
         methods: {
+
+
+            //重置
+            replacement() {
+                this.pageNum = 1;
+                this.pageSize = 5;
+                this.findPage();
+            },
+            //分页查询所有业主
+            findPage() {
+                inspector.findPage(this.pageNum, this.pageSize, this.param).then(resp => {
+                    this.tableData = resp.data;
+                });
+            },
+            //分页
+            handleSizeChange(val) {
+                this.pageSize = val;
+                this.findPage();
+            },
+            handleCurrentChange(val) {
+                this.pageNum = val;
+                this.findPage();
+            },
             //复选框的方法
             handleSelectionChange(val) {
                 this.multipleSelection = val;
             },
 
-            //重置
-            replacement() {
-                this.param.pageNum = 1;
-                this.param.pageSize = 5;
-                this.findPage();
-            },
             //删除
             handleDelete(index, row) {
                 this.$confirm(`此操作将删除${row.typeName}, 是否继续?`, '提示', {
@@ -319,27 +352,6 @@
             },
 
 
-            //分页
-            handleSizeChange(val) {
-                console.log(`每页 ${val} 条`);
-                this.param.pageSize = val;
-                this.findPage();
-            },
-            handleCurrentChange(val) {
-                console.log(`当前页: ${val}`);
-                this.param.pageNum = val;
-                this.findPage();
-            },
-            //分页查询所有业主
-            findPage() {
-                axios.post("/car/findPage", this.param).then(resp => {
-                    let result = resp.data;
-                    if (result.code === 1) {
-                        this.tableData = result.data;
-                    }
-                });
-            },
-
             //加载所有车辆状态
             findAll() {
                 axios.get("/car").then(resp => {
@@ -368,9 +380,12 @@
                     }
                 });
             },
-
+            reset() {
+                // this.
+            }
         },
         created() {
+            this.findPage()
         }
     };
 </script>

@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Login from '@/views/login'
+import Login from '@/views/Login'
 import Home from '@/views/Home'
 import Role from '@/views/permission/Role'
 import Car from "@/views/permission/Car";
@@ -33,7 +33,14 @@ const routes = [
                 path: '/car',
                 name: "Car",
                 component: Car
-            }
+            },
+            {
+                path: '/inspector',
+                name: "Inspector",
+                component: () => import('@/views/staffSys/Inspector'),
+                meta: { title: 'Inspector.vue页面', icon: 'table' },
+                // hidden: true
+            },
         ]
     }
 ]
