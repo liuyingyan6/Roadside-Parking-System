@@ -6,6 +6,8 @@ import Role from '@/views/permission/Role'
 import Car from "@/views/permission/Car";
 import LoginLog from "@/views/log/LoginLog.vue";
 import OperationLog from "@/views/log/OperationLog.vue";
+import Magnetometer from "@/views/device/Magnetometer.vue";
+import MagnetometerLog from "@/views/device/MagnetometerLog.vue";
 
 Vue.use(VueRouter)
 
@@ -37,6 +39,8 @@ const routes = [
             },
             {path: '/login-log', name: "LoginLog", component: LoginLog},
             {path: '/operation-log', name: "OperationLog", component: OperationLog},
+            {path: '/magnetometer', name: "Magnetometer", component: Magnetometer},
+            {path: '/magnetometer-log/:id', name: "MagnetometerLog", component: MagnetometerLog},
         ]
     }
 ]
