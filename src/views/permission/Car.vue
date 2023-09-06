@@ -22,7 +22,7 @@
                             <el-button type="primary" icon="el-icon-search" @click="getCarList">查询</el-button>
                         </el-form-item>
                         <el-form-item>
-                                <el-button type="primary" @click="exportCarList" >批量导出</el-button>
+                            <el-button type="primary" @click="exportCarList">批量导出</el-button>
                         </el-form-item>
                     </el-form>
                 </el-row>
@@ -37,7 +37,7 @@
                     <el-table-column label="消费金额" prop="orderAmount"></el-table-column>
                     <el-table-column label="待缴费金额" prop="notPayAmount"></el-table-column>
                     <el-table-column label="创建时间" prop="creatTime"></el-table-column>
-                    <el-table-column label="操作"  width="180px">
+                    <el-table-column label="操作" width="180px">
                         <template slot-scope="scope">
                             <el-button type="primary" size="mini" @click="">订单记录</el-button>
                             <el-dropdown>
@@ -53,7 +53,7 @@
                     </el-table-column>
                 </el-table>
 
-<!--                 分页组件 total总条数 page-size：每页大写 current-page 当前页码 page-sizes：下拉列表 page-size：页面大小 -->
+                <!--                 分页组件 total总条数 page-size：每页大写 current-page 当前页码 page-sizes：下拉列表 page-size：页面大小 -->
                 <el-pagination
                         @size-change="handleSizeChange"
                         @current-change="handleCurrentChange"
@@ -76,8 +76,8 @@
                 pageNumber: 1,//自定义默认显示第1页
                 pageSize: 3, //自定义默认每页显示3条数据
                 total: 0,
-                key:'',
-               CarList: [],
+                key: '',
+                CarList: [],
 
             }
         },
@@ -89,7 +89,7 @@
                 xhr.open("GET", "http://localhost:9090/car/exportExcel");
                 xhr.setRequestHeader("Authorization", "Bearer " + token);
                 xhr.responseType = 'blob'; // 设置响应类型为blob
-                xhr.onload = function() {
+                xhr.onload = function () {
                     if (xhr.status === 200) {
                         const blob = new Blob([xhr.response]); // 创建blob对象
                         const link = document.createElement('a');
@@ -110,17 +110,17 @@
                 this.pageSize = val;
                 this.getCarList();
             },
-            getCarList(){
-                this.$axios.get("/car/carList",{
-                    params:{
+            getCarList() {
+                this.$axios.get("/car/carList", {
+                    params: {
                         pageSize: this.pageSize,
-                        pageNum : this.pageNumber,
-                        key:this.key
+                        pageNum: this.pageNumber,
+                        key: this.key
                     }
-                }).then(resp=>{
+                }).then(resp => {
                     console.log(resp)
-                    this.CarList=resp.data.list;
-                    this.total=resp.data.total;
+                    this.CarList = resp.data.list;
+                    this.total = resp.data.total;
                 })
 
             }
