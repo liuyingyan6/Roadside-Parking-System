@@ -1,378 +1,305 @@
 <template>
     <div>
-        <el-row :gutter="12">
-            <el-card shadow="always">
-                <el-breadcrumb separator-class="el-icon-arrow-right">
-                    <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-                    <el-breadcrumb-item>基础信息管理</el-breadcrumb-item>
-                    <el-breadcrumb-item>车辆信息</el-breadcrumb-item>
-                </el-breadcrumb>
-            </el-card>
-        </el-row>
-        <el-row>
-            <el-card shadow="always">
-                <el-row>
-                    <el-form :inline="true" :model="param" >
-                        <el-form-item label="车牌号">
-                            <el-input v-model="param.carNumber" placeholder="请输入车牌号"></el-input>
-                        </el-form-item>
-                        <el-form-item>
-                            <el-button type="primary" icon="el-icon-search" @click="findPage">查询</el-button>
-                        </el-form-item>
-                    </el-form>
-                    <div>
-                        <el-upload style="display: inline;margin-right: 10px"
-                                   action="/car/importExcel"
-                                   :show-file-list="false"
-                                   :on-success="handleUploadSuccess"
-                                   accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
-                            <el-button type="primary" plain icon="el-icon-upload">批量导入</el-button>
-                        </el-upload>
-                        <el-button type="primary" plain @click="showDialog()">添加</el-button>
-                        <el-button type="primary" plain icon="el-icon-s-flag" @click="exportExcel">批量导出</el-button>
-                    </div>
-                </el-row>
 
-                <!-- 表格 data：要绑定的数据  handleSelectionChange 多选的方法 -->
-                <el-table
-                        ref="multipleTable"
-                        :data="tableData.list"
-                        tooltip-effect="dark"
-                        style="width: 100%;text-align: center;font-size: 18px"
-                        @selection-change="handleSelectionChange">
-
-                    <!-- 复选框 -->
-                    <el-table-column
-                            type="selection"
-                            width="55">
-                    </el-table-column>
-                    <el-table-column
-                            prop="carNumber"
-                            label="车牌号"
-                            width="120">
-                    </el-table-column>
-                    <!-- 数据列 prop属性名 label显示列名  -->
-                    <el-table-column
-                            prop="carUse"
-                            label="用途"
-                            width="120">
-                    </el-table-column>
-                    <el-table-column
-                            prop="dateRegistration"
-                            label="上牌日期"
-                            width="200">
-                        <template slot-scope="scope">{{ scope.row.dateRegistration }}</template>
-                    </el-table-column>
-                    <el-table-column
-                            prop="state"
-                            label="状态"
-                            width="100">
-                        <template slot-scope="scope">
-                            <el-tag
-                                    :type="scope.row.state === 1 ? 'success' : 'primary'"
-                                    disable-transitions>{{scope.row.state == 1 ? "闲置" : "租赁"}}
-                            </el-tag>
-                        </template>
-                    </el-table-column>
-                    <el-table-column
-                            prop="typeName"
-                            label="车辆类型">
-                    </el-table-column>
-                    <el-table-column label="操作">
-                        <template slot-scope="scope">
-                            <el-button-group>
-                                <el-button
-                                        type="primary" icon="el-icon-view" plain
-                                        @click="handleView(scope.$index,scope.row)">查看
-                                </el-button>
-                                <el-button
-                                        type="success" icon="el-icon-edit" plain
-                                        @click="handleEdit(scope.$index,scope.row)">编辑
-                                </el-button>
-                                <el-button
-                                        type="danger" icon="el-icon-circle-close" plain
-                                        @click="handleDelete(scope.$index, scope.row)">删除
-                                </el-button>
-                            </el-button-group>
-                        </template>
-                    </el-table-column>
-                </el-table>
-
-                <!-- 分页组件 total总条数 page-size：每页大写 current-page 当前页码 page-sizes：下拉列表 page-size：页面大小 -->
-                <el-pagination style="margin-top: 15px"
-                               background
-                               @size-change="handleSizeChange"
-                               @current-change="handleCurrentChange"
-                               :current-page="param.pageNum"
-                               :page-sizes="[3, 5, 10, 20]"
-                               :page-size="param.pageSize"
-                               layout="total, sizes, prev, pager, next, jumper"
-                               :total="tableData.total">
-                </el-pagination>
-            </el-card>
-        </el-row>
-
-        <!-- 添加和修改的对话框 -->
-        <el-dialog title="车辆类型管理" :visible.sync="dialogFormVisible" width="500px">
-            <!--添加表单-->
-            <el-form label-width="120px" :model="form" :rules="rules" ref="ruleForm" :disabled="disabled">
-
-                <el-form-item label="车牌号" :label-width="formLabelWidth" prop="carNumber">
-                    <el-input v-model="form.carNumber" placeholder="请输入车牌号" autocomplete="off"
-                              style="width: 300px;"></el-input>
-                </el-form-item>
-
-                <el-form-item label="车辆类型" :label-width="formLabelWidth" prop="carTypeId">
-                    <el-select v-model="form.carTypeId" placeholder="请选择车辆类型" style="width: 300px;">
-                        <el-option v-for="carType in carTypes" :label="carType.typeName"
-                                   :value="carType.id"></el-option>
-                    </el-select>
-                </el-form-item>
-
-                <el-form-item label="车架号" :label-width="formLabelWidth" prop="frameNumber">
-                    <el-input v-model="form.frameNumber" placeholder="请输入车架号" autocomplete="off"
-                              style="width: 300px;"></el-input>
-                </el-form-item>
-
-                <el-form-item label="电机号" :label-width="formLabelWidth" prop="motorNumber">
-                    <el-input v-model="form.motorNumber" placeholder="请输入电机号" autocomplete="off"
-                              style="width: 300px;"></el-input>
-                </el-form-item>
-
-                <el-form-item label="入住时间" :label-width="formLabelWidth" prop="dateRegistration">
-                    <el-date-picker
-                            v-model="form.dateRegistration" format="yyyy-MM-dd" value-format="yyyy-MM-dd"
-                            type="date"
-                            placeholder="年-月-日" style="width: 300px;">
-                    </el-date-picker>
-                </el-form-item>
-
-                <el-form-item label="状态" :label-width="formLabelWidth" prop="state">
-                    <el-select v-model="form.state" placeholder="请选择车辆类型" style="width: 300px;">
-                        <el-option v-for="car in cars" :label="car.state == 1 ? '闲置' : '租赁'"
-                                   :value="car.state"></el-option>
-                    </el-select>
-                </el-form-item>
-
-                <el-form-item label="用途" :label-width="formLabelWidth" prop="carUse">
-                    <el-select v-model="form.carUse" placeholder="请选择车辆类型" style="width: 300px;">
-                        <el-option v-for="car in carUses" :label="car.carUse"
-                                   :value="car.carUse"></el-option>
-                    </el-select>
-                </el-form-item>
+        <!--面包屑-->
+        <el-breadcrumb separator="/">
+            <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item>系统管理</el-breadcrumb-item>
+            <el-breadcrumb-item>角色列表</el-breadcrumb-item>
+        </el-breadcrumb>
 
 
-                <el-form-item label="备注">
-                    <el-input type="textarea" v-model="form.remarks" placeholder="请输入备注信息"></el-input>
+        <el-card>
+
+            <!--搜索框&添加按钮-->
+            <el-row :gutter="20">
+                <el-col :span="8">
+                    <el-input placeholder="请输角色名称" clearable v-model="name" @clear="searchRole">
+                        <el-button slot="append" icon="el-icon-search" @click="searchRole"></el-button>
+                    </el-input>
+                </el-col>
+                <el-col :span="4">
+                    <el-button type="primary" @click="addDialogVisible=true">添加角色</el-button>
+                </el-col>
+            </el-row>
+
+            <!--信息表单-->
+            <el-table :data="roleList" border stripe>
+                <el-table-column type="index"></el-table-column>
+                <el-table-column label="角色名称" prop="name"></el-table-column>
+                <el-table-column label="操作">
+                    <template slot-scope="scope">
+                        <el-button type="success" size="mini" @click="showAuthorizationDialog(scope.row)">分配权限</el-button>
+                        <el-button type="primary" size="mini" @click="showEditDialog(scope.row)">修改</el-button>
+                        <el-button type="danger" size="mini" @click="removeRoleById(scope.row.id)">删除</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+
+            <!--分页插件-->
+            <el-pagination
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    :current-page="pageNum"
+                    :page-sizes="[5, 10 , 15, 20]"
+                    :page-size="pageSize"
+                    layout="total, sizes, prev, pager, next, jumper"
+                    :total="total"
+            ></el-pagination>
+
+        </el-card>
+
+        <!--添加角色-->
+        <el-dialog title="添加角色" :visible.sync="addDialogVisible" width="30%">
+            <el-form
+                    :model="addRoleForm"
+                    ref="addRoleFormRef"
+                    :label-width="formLableWidth"
+                    class="demo-ruleForm"
+            >
+                <el-form-item label="角色名称">
+                    <el-input v-model="addRoleForm.name"></el-input>
                 </el-form-item>
             </el-form>
-            <div slot="footer" class="dialog-footer" style="text-align: center" v-if="!disabled">
-                <el-button type="primary" @click="saveOrUpdate()">确 定</el-button>
-                <el-button type="danger" @click="resetForm()">返回</el-button>
-            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="addRole">确 定</el-button>
+                <el-button @click="addDialogVisible = false">取 消</el-button>
+            </span>
         </el-dialog>
+
+        <!--修改角色-->
+        <el-dialog title="修改角色" :visible.sync="editDialogVisible" width="30%">
+            <el-form
+                    :model="editRoleForm"
+                    ref="editRoleFormRef"
+                    :label-width="formLableWidth"
+                    class="demo-ruleForm"
+            >
+                <el-form-item label="角色名称">
+                    <el-input v-model="editRoleForm.name"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="editRole">确 定</el-button>
+                <el-button @click="editDialogVisible = false">取 消</el-button>
+            </span>
+        </el-dialog>
+
+        <!--角色授权-->
+        <el-dialog title="角色授权" :visible.sync="authorizationDialogVisible" width="30%">
+            <el-form
+                    :model="authorizationForm"
+                    :label-width="formLableWidth"
+                    class="demo-ruleForm"
+            >
+
+                <el-form-item label="角色名称">
+                    <el-input v-model="authorizationForm.name" disabled></el-input>
+                </el-form-item>
+
+                <el-form-item label="权限数据">
+                    <el-tree
+                            :data="permissionData"
+                            show-checkbox
+                            ref="permissionTree"
+                            node-key="id"
+                            default-expand-all
+                            :default-checked-keys="defaultPermissionCheck"
+                            :props="defaultProps">
+                    </el-tree>
+                </el-form-item>
+
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="roleAuthorization()">确 定</el-button>
+                <el-button @click="authorizationDialogVisible = false">取 消</el-button>
+            </span>
+        </el-dialog>
+
     </div>
 </template>
 <script>
     export default {
         data() {
             return {
-                //表单验证的规则
-                ruleForm: {},
-                rules: {},
-                //提交的表单
-                form: {},
-                //添加的显示
-                dialogFormVisible: false,
-                //查看禁用
-                disabled: false,
-                //添加的宽度
-                formLabelWidth: '120px',
-                //分页查询提交的参数
-                param: {
-                    pageNum: 1,
-                    pageSize: 5
+                formLableWidth:"",
+                addDialogVisible: false,//新增弹出框
+                editDialogVisible: false,//修改弹出框
+                authorizationDialogVisible: false,//授权弹出框
+                pageNum: 1,
+                pageSize: 5,
+                name: "", // 搜索框&表单角色名称
+                roleList: [], // 表单数据
+                total: 0,
+                //新增弹框数据
+                addRoleForm: {
+                    name: "",
+                    code: ""
                 },
-                //显示的属性
-                tableData: {},
-                //显示车辆类型
-                cars: [],
-                //查询所有的车辆类型
-                carTypes: [],
-                carUses: [],
-                //复选框
-                multipleSelection: [],
-            }
+                //修改弹框数据
+                editRoleForm: {
+                    id: -1,
+                    name: ""
+                },
+                //授权弹框数据
+                authorizationForm: {
+                    id: "",
+                    name: "",
+                    permissionData: [] //选择的权限数据
+                },
+                //授权弹框
+                defaultProps: {
+                    children: 'children',
+                    label: 'name'
+                },
+                permissionData:[],
+                defaultPermissionCheck:[],//默认权限选中
+            };
         },
         methods: {
-            //复选框的方法
-            handleSelectionChange(val) {
-                this.multipleSelection = val;
+
+            // 分页加载表单数据&查询
+            getRoleList() {
+                //分页查询，给：roleList  total 赋值
+                //后端需要：pageSize pageNum 查询条件name
+                this.$axios.get("/role/findAll2Page", {
+                    params: {
+                        pageNum: this.pageNum,
+                        pageSize: this.pageSize,
+                        name: this.name
+                    }
+                }).then(res => {
+                    console.log("", res);
+                    this.total = res.data.total;
+                    this.roleList = res.data.records;
+                })
             },
 
-            //重置
-            replacement() {
-                this.param.pageNum = 1;
-                this.param.pageSize = 5;
-                this.findPage();
-            },
-            //删除
-            handleDelete(index, row) {
-                this.$confirm(`此操作将删除${row.typeName}, 是否继续?`, '提示', {
+            // 删除角色信息
+            removeRoleById(id) {
+                this.$confirm('是否真的删除这条数据?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    //调用后台服务器删除
-                    axios.delete(`/car/${row.id}`).then(resp => {
-                        let result = resp.data;
-                        if (result.code === 1) {
-                            this.$message.success(result.message);
+                    this.$axios.delete('/role/delete/' + id).then(res => {
+                        if (res.code == 200) {
+                            this.$message.success("删除成功");
+                            this.pageNum = 1;
+                            this.getRoleList();// 刷新表单数据
                         } else {
-                            this.$message.error(result.message);
+                            this.$message.error(res.msg);
                         }
-                    }).finally(() => {
-                        //重新加载一次表格的数据
-                        this.findPage();
-                    });
+                    })
+                }).catch(() => {
+                    this.$message.info("已取消删除");
+                });
+            },
+
+            //新增弹框
+            showAddDialog(row) {
+                this.addDialogVisible = true;
+                this.addRoleForm = false;
+            },
+            //修改弹框
+            showEditDialog(row) {
+                this.editDialogVisible = true;//显示弹窗
+                let str = JSON.stringify(row);
+                this.editRoleForm = JSON.parse(str);//将信息赋给editRoleForm
+            },
+            //授权弹框
+            async showAuthorizationDialog(row){
+                this.authorizationDialogVisible = true;//显示角色授权的弹出框
+                let str = JSON.stringify(row);
+                this.authorizationForm = JSON.parse(str);
+                await this.searchPermissionData();//查询所有的权限数据
+                await this.searchDefaultPermissionCheck(row.id);//根据角色ID查询已有的权限
+            },
+            //查询所有的权限数据
+            async searchPermissionData(){
+                await new Promise((resolve,reject)=>{
+                    this.$axios.get('/urlPermission/all').then(res=>{
+                        if(res.code == 200){
+                            this.permissionData = res.data;
+                        }else{
+                            this.$message.error(res.msg);
+                        }
+                        resolve(true);//表示异步方法执行完成
+                    })
+                })
+            },
+            //根据角色ID查询默认的权限
+            async searchDefaultPermissionCheck(id){
+                await new Promise((resolve,reject)=>{
+                    this.$axios.get('/roleUrlPermission/default/'+id).then(res=>{
+                        if(res.code == 200){
+                            this.defaultPermissionCheck = res.data;
+                        }else{
+                            this.$message.error(res.msg);
+                        }
+                        resolve(true);//表示异步方法执行完成
+                    })
                 })
             },
 
-
-            //上传成功以后的回调函数, result就是服务器返回的对象
-            handleUploadSuccess(result) {
-                if (result.code === 1) {
-                    this.$message.success(result.message);
-                } else {
-                    this.$message.error("导入Excel失败");
-                }
-                this.findPage();
-            },
-            //导出按钮
-            exportExcel() {
-                //后台直接访问一个地址，进行下载
-                location.href = "/car/exportExcel";
-            },
-
-
-            //查看显示的对话框
-            handleView(index, row) {
-                this.dialogFormVisible = true;
-                this.form = row;
-                this.disabled = true;
-            },
-
-            //显示添加的对话框
-            showDialog() {
-                this.dialogFormVisible = true;
-                this.disabled = false;
-            },
-            //编辑
-            handleEdit(index, row) {
-                this.dialogFormVisible = true;
-                this.disabled = false;
-                let obj = {};
-                Object.assign(obj, row);
-                this.form = obj;
-            },
-            //取消显示的对话框
-            resetForm() {
-                this.$refs.ruleForm.resetFields();
-                this.dialogFormVisible = false;
-            },
-            //确定按钮
-            saveOrUpdate() {
-                if (this.form.id) {
-                    axios.put("/car", this.form).then(
-                        resp => {
-                            let result = resp.data;
-                            if (result.code === 1) {
-                                //显示信息框
-                                this.$message.success(result.message);
-                            } else {
-                                this.$message.error(result.message);
-                            }
-                        }).finally(() => {
-                        //隐藏对话框
-                        this.dialogFormVisible = false;
-                        //清空文本框的内容
-                        this.form = {};
-                        this.findPage();
-                    })
-                } else {
-                    //没有就是添加
-                    axios.post("/car", this.form).then(resp => {
-                        //获取响应结果对象
-                        let result = resp.data;
-                        if (result.code === 1) {
-                            this.$message.success(result.message);
-                        } else {
-                            this.$message.error(result.message);
-                        }
-                    }).finally(() => {
-                        this.dialogFormVisible = false;
-                        this.form = {};
-                        this.findPage();
-                    });
-                }
-            },
-
-
-            //分页
-            handleSizeChange(val) {
-                console.log(`每页 ${val} 条`);
-                this.param.pageSize = val;
-                this.findPage();
-            },
-            handleCurrentChange(val) {
-                console.log(`当前页: ${val}`);
-                this.param.pageNum = val;
-                this.findPage();
-            },
-            //分页查询所有业主
-            findPage() {
-                axios.post("/car/findPage", this.param).then(resp => {
-                    let result = resp.data;
-                    if (result.code === 1) {
-                        this.tableData = result.data;
+            //提交授权
+            roleAuthorization(){
+                //permissionData代表已有权限，默认选中
+                this.authorizationForm.permissionData = this.$refs.permissionTree.getCheckedKeys();
+                this.$axios.post('/roleUrlPermission/roleAuthorization',this.authorizationForm).then(res=>{
+                    if(res.code == 200){
+                        this.$message.success("权限分配成功");
+                        this.authorizationDialogVisible = false;//关闭弹窗
+                    }else{
+                        this.$message.error(res.msg);
                     }
                 });
             },
-
-            //加载所有车辆状态
-            findAll() {
-                axios.get("/car").then(resp => {
-                    let result = resp.data;
-                    if (result.code === 1) {
-                        this.cars = result.data;
+            //提交修改
+            editRole() {
+                this.$axios.post('/role/update', this.editRoleForm).then(res => {
+                    if (res.code == 200) {
+                        this.$message.success("修改成功");
+                        this.editDialogVisible = false;
+                        this.getRoleList();//重新请求数据，刷新数据列表
+                    } else {
+                        this.$message.error(res.msg);
                     }
-                });
+                })
+            },
+            //提交新增
+            addRole() {
+                this.$axios.post('/role/add', this.addRoleForm).then(res => {
+                    if (res.code == 200) {
+                        this.$message.success("新增成功");
+                        this.addDialogVisible = false;
+                        this.getRoleList();//重新请求数据，刷新数据列表
+                    } else {
+                        this.$message.error(res.msg);
+                    }
+                })
             },
 
-            //查询所有车辆用途
-            findCarUseAll() {
-                axios.get("/car/carUse").then(resp => {
-                    let result = resp.data;
-                    if (result.code === 1) {
-                        this.carUses = result.data;
-                    }
-                });
+            searchRole() {
+                this.pageNum = 1;
+                this.pageSize = 5;
+                this.getRoleList();
             },
-            //加载所有车辆类型
-            findAllCarType() {
-                axios.get("/carType").then(resp => {
-                    let result = resp.data;
-                    if (result.code === 1) {
-                        this.carTypes = result.data;
-                    }
-                });
+            handleSizeChange(newSize) {
+                this.pageSize = newSize;
+                this.getRoleList();
             },
+            handleCurrentChange(newPage) {
+                this.pageNum = newPage;
+                this.getRoleList();
+            }
+
 
         },
         created() {
+            this.searchRole();
         }
     };
 </script>
 <style lang="less" scoped>
-
 </style>
