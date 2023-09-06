@@ -13,14 +13,22 @@
       <el-card shadow="always">
         <el-row>
           <el-form :inline="true" :model="param">
-            <el-form-item label="订单编号">
-              <el-input v-model="param.carNumber" placeholder="请输入订单编号"></el-input>
+            <el-form-item label="车牌号">
+              <el-input v-model="param.carNumber" placeholder="请输入车牌号"></el-input>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" icon="el-icon-search" @click="findPage">查询</el-button>
             </el-form-item>
           </el-form>
           <div>
+            <el-upload style="display: inline;margin-right: 10px"
+                       action="/car/importExcel"
+                       :show-file-list="false"
+                       :on-success="handleUploadSuccess"
+                       accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+              <el-button type="primary" plain icon="el-icon-upload">批量导入</el-button>
+            </el-upload>
+            <el-button type="primary" plain @click="showDialog()">添加</el-button>
             <el-button type="primary" plain icon="el-icon-s-flag" @click="exportExcel">批量导出</el-button>
           </div>
         </el-row>
@@ -28,7 +36,7 @@
         <!-- 表格 data：要绑定的数据  handleSelectionChange 多选的方法 -->
         <el-table
             ref="multipleTable"
-            :data="roleList"
+            :data="tableData.list"
             tooltip-effect="dark"
             style="width: 100%;text-align: center;font-size: 18px"
             @selection-change="handleSelectionChange">
@@ -39,74 +47,51 @@
               width="55">
           </el-table-column>
           <el-table-column
-              prop="orderNumber"
-              label="订单编号"
+              prop="carNumber"
+              label="车牌号"
               width="120">
           </el-table-column>
           <!-- 数据列 prop属性名 label显示列名  -->
-<!--          <el-table-column-->
-<!--              prop="createTime"-->
-<!--              label="提交时间"-->
-<!--              width="200">-->
-<!--            <template slot-scope="scope">{{ scope.row.dateRegistration }}</template>-->
-<!--          </el-table-column>-->
           <el-table-column
-              prop="createTime"
-              label="提交时间"
+              prop="carUse"
+              label="用途"
+              width="120">
+          </el-table-column>
+          <el-table-column
+              prop="dateRegistration"
+              label="上牌日期"
               width="200">
+            <template slot-scope="scope">{{ scope.row.dateRegistration }}</template>
           </el-table-column>
           <el-table-column
-              prop="carNumber"
-              label="车牌号码"
-              width="120">
-          </el-table-column>
-          <el-table-column
-              prop="roadName"
-              label="所属路段"
-              width="120">
-          </el-table-column>
-          <el-table-column
-              prop="parkingNumber"
-              label="泊车编号"
-              width="120">
-          </el-table-column>
-          <el-table-column
-              prop="inspectorName"
-              label="巡检员"
-              width="120">
-          </el-table-column>
-          <el-table-column
-              prop="orderAmount"
-              label="订单金额"
-              width="120">
-          </el-table-column>
-          <el-table-column
-              prop="status"
-              label="订单状态"
-              width="120"
-          >
+              prop="state"
+              label="状态"
+              width="100">
             <template slot-scope="scope">
-<!--              <el-tag-->
-<!--                  :type="stateTagMap[scope.row.state].type"-->
-<!--                  disable-transitions-->
-<!--              >-->
-<!--                {{ stateTagMap[scope.row.state].text }}-->
-<!--              </el-tag>-->
               <el-tag
-                  :type="stateTagMap[scope.row.status] ? stateTagMap[scope.row.status].type : 'default'"
-                  disable-transitions
-              >
-                {{ stateTagMap[scope.row.status] ? stateTagMap[scope.row.status].text : '未定义状态' }}
+                  :type="scope.row.state === 1 ? 'success' : 'primary'"
+                  disable-transitions>{{ scope.row.state == 1 ? "闲置" : "租赁" }}
               </el-tag>
             </template>
           </el-table-column>
-
+          <el-table-column
+              prop="typeName"
+              label="车辆类型">
+          </el-table-column>
           <el-table-column label="操作">
             <template slot-scope="scope">
               <el-button-group>
                 <el-button
-                    type="primary"
-                    @click="handleParticulars(scope.$index,scope.row)">订单详情
+                    type="primary" icon="el-icon-view" plain
+                    @click="handleView(scope.$index,scope.row)">查看
+                </el-button>
+                <el-button
+                    type="success" icon="el-icon-edit" plain
+                    @click="handleEdit(scope.$index,scope.row)">编辑
+                </el-button>
+                <el-button
+                    type="danger" icon="el-icon-circle-close" plain
+                    @click="handleDelete(scope.$index, scope.row)">删除
                 </el-button>
               </el-button-group>
             </template>
@@ -114,15 +99,16 @@
         </el-table>
 
         <!-- 分页组件 total总条数 page-size：每页大写 current-page 当前页码 page-sizes：下拉列表 page-size：页面大小 -->
-        <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page="pageNum"
-            :page-sizes="[5, 10 , 15, 20]"
-            :page-size="pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="total"
-        ></el-pagination>
+        <el-pagination style="margin-top: 15px"
+                       background
+                       @size-change="handleSizeChange"
+                       @current-change="handleCurrentChange"
+                       :current-page="param.pageNum"
+                       :page-sizes="[3, 5, 10, 20]"
+                       :page-size="param.pageSize"
+                       layout="total, sizes, prev, pager, next, jumper"
+                       :total="tableData.total">
+        </el-pagination>
       </el-card>
     </el-row>
 
@@ -188,21 +174,10 @@
   </div>
 </template>
 <script>
-const axios = require('axios');
 export default {
   data() {
     return {
 
-      stateTagMap: {
-        0: { type: 'success', text: '进行中' },
-        1: { type: 'info', text: '待缴费' },
-        2: { type: 'warning', text: '已缴费' },
-        3: { type: 'danger', text: '已完成' },
-        4: { type: 'primary', text: '已退款' }
-      },
-      param: {
-        carNumber: ""
-      },
       //表单验证的规则
       ruleForm: {},
       rules: {},
@@ -214,20 +189,11 @@ export default {
       disabled: false,
       //添加的宽度
       formLabelWidth: '120px',
-
-      roleList: [
-        { status: 0 },
-        { status: 1 },
-        { status: 2 },
-        { status: 3 },
-        { status: 4 }
-      ], // 表单数据
       //分页查询提交的参数
-
+      param: {
         pageNum: 1,
-        pageSize: 5,
-      total: 0,
-
+        pageSize: 5
+      },
       //显示的属性
       tableData: {},
       //显示车辆类型
@@ -247,8 +213,8 @@ export default {
 
     //重置
     replacement() {
-      this.pageNum = 1;
-      this.pageSize = 5;
+      this.param.pageNum = 1;
+      this.param.pageSize = 5;
       this.findPage();
     },
     //删除
@@ -286,13 +252,15 @@ export default {
     //导出按钮
     exportExcel() {
       //后台直接访问一个地址，进行下载
-      location.href = "http://localhost:9090/order/exportExcel";
+      location.href = "/car/exportExcel";
     },
 
 
-    //订单详情
-    handleParticulars(index, row) {
-      this.$router.push({ path: `/orderDetails` });
+    //查看显示的对话框
+    handleView(index, row) {
+      this.dialogFormVisible = true;
+      this.form = row;
+      this.disabled = true;
     },
 
     //显示添加的对话框
@@ -352,28 +320,23 @@ export default {
 
 
     //分页
-    handleSizeChange(newSize) {
-      this.pageSize = newSize;
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`);
+      this.param.pageSize = val;
       this.findPage();
     },
-    handleCurrentChange(newPage) {
-      this.pageNum = newPage;
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+      this.param.pageNum = val;
       this.findPage();
     },
     //分页查询所有业主
     findPage() {
-      //分页查询，给：roleList  total 赋值
-      //后端需要：pageSize pageNum 查询条件name
-      this.$axios.get("/order/page", {
-        params: {
-          pageNum: this.pageNum,
-          pageSize: this.pageSize,
-          carNumber: this.param.carNumber
+      axios.post("/car/findPage", this.param).then(resp => {
+        let result = resp.data;
+        if (result.code === 1) {
+          this.tableData = result.data;
         }
-      }).then(res => {
-        console.log("", res.data.records);
-        this.total = res.data.total;
-        this.roleList = res.data.records;
       });
     },
 
@@ -405,15 +368,9 @@ export default {
         }
       });
     },
-    searchRole() {
-      this.pageNum = 1;
-      this.pageSize = 5;
-      this.findPage();
-    },
 
   },
   created() {
-    this.searchRole();
   }
 };
 </script>
