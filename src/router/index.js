@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Login from '@/views/login'
 import Home from '@/views/Home'
 import Role from '@/views/permission/Role'
+import Order from "@/views/permission/Order.vue";
 
 Vue.use(VueRouter)
 
@@ -27,6 +28,11 @@ const routes = [
                 path: '/Role',
                 name: "Role",
                 component: Role
+            },
+            {
+                path: '/order',
+                name: "order",
+                component: Order
             }
         ]
     }
@@ -38,25 +44,25 @@ const router = new VueRouter({
     routes
 })
 
-// 前置守卫：运行在路由跳转之前
-router.beforeEach((to, form, next) => {
-    console.log("跳转路由之前，执行……………………");
-    let path = to.path;
-    if (path == '/' || path == '/Login') {
-        next();
-        return;//代码到此结束，不要继续向下执行
-    }
-    let id = localStorage.getItem("id");
-    if (!id) {
-        next("/");//没有登录，就定位到登录页面上去
-    } else {
-        next();//放行
-    }
-})
-//后置守卫：运行在路由跳转之后
-router.afterEach((to, form, next) => {
-    console.log("跳转路由之后，执行……………………");
-})
+//前置守卫：运行在路由跳转之前
+// router.beforeEach((to, form, next) => {
+//     console.log("跳转路由之前，执行……………………");
+//     let path = to.path;
+//     if (path == '/' || path == '/Login') {
+//         next();
+//         return;//代码到此结束，不要继续向下执行
+//     }
+//     let id = localStorage.getItem("id");
+//     if (!id) {
+//         next("/");//没有登录，就定位到登录页面上去
+//     } else {
+//         next();//放行
+//     }
+// })
+// //后置守卫：运行在路由跳转之后
+// router.afterEach((to, form, next) => {
+//     console.log("跳转路由之后，执行……………………");
+// })
 
 
 export default router
