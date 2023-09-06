@@ -4,6 +4,7 @@ import Login from '@/views/Login'
 import Home from '@/views/Home'
 import Role from '@/views/permission/Role'
 import Car from "@/views/permission/Car";
+import LoginLog from "@/views/log/LoginLog.vue";
 
 Vue.use(VueRouter)
 
@@ -33,7 +34,12 @@ const routes = [
                 path: '/car',
                 name: "Car",
                 component: Car
-            }
+            },
+            {
+                path: '/login-log',
+                name: "LoginLog",
+                component: LoginLog
+            },
         ]
     }
 ]
