@@ -16,6 +16,9 @@ request.interceptors.request.use(config => {
 
 // 添加响应拦截器
 request.interceptors.response.use(response => {//200响应码  HTTP状态码
+    if (response.data.code !== 200) {
+        return Promise.reject(response.data.msg);
+    }
     return response.data
 }, async error => {//非200响应码
     //保存当前请求
