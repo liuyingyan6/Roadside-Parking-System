@@ -24,6 +24,7 @@
             </el-form-item>
             <el-form-item>
               <el-button type="primary" icon="el-icon-search" @click="getPage">查询</el-button>
+              <el-button type="primary" icon="el-icon-search" @click="resetKeyword">重置</el-button>
             </el-form-item>
           </el-form>
           <div>
@@ -347,6 +348,11 @@ export default {
 
           });
     },
+    resetKeyword() {
+      this.nameKeyword = '';
+      this.roadNameKeyword = '';
+      this.inspectorNameKeyword = '';
+    }
   },
   created() {
     this.getPage();
