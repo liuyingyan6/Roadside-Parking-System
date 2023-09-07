@@ -5,8 +5,8 @@
         <el-breadcrumb separator-class="el-icon-arrow-right">
           <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
           <el-breadcrumb-item>设备管理</el-breadcrumb-item>
-          <el-breadcrumb-item :to="{ path: '/magnetometer' }">地磁管理</el-breadcrumb-item>
-          <el-breadcrumb-item>地磁日志</el-breadcrumb-item>
+          <el-breadcrumb-item :to="{ path: '/pda' }">pda管理</el-breadcrumb-item>
+          <el-breadcrumb-item>pda登录日志</el-breadcrumb-item>
         </el-breadcrumb>
       </el-card>
     </el-row>
@@ -15,22 +15,8 @@
       <!--信息表单-->
       <el-table :data="logList" border stripe>
         <el-table-column label="时间" prop="createTime"></el-table-column>
-        <el-table-column label="泊位状态">
-          <template slot-scope="scope">
-            <span v-if="scope.row.magnetometerStatus === 0">在线</span>
-            <span v-else-if="scope.row.magnetometerStatus === 1">离线</span>
-            <span v-else-if="scope.row.magnetometerStatus === 2">未激活</span>
-            <span v-else>未知</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="地磁状态">
-          <template slot-scope="scope">
-            <span v-if="scope.row.parkingStatus === 0">驶入</span>
-            <span v-else-if="scope.row.parkingStatus === 1">驶出</span>
-            <span v-else-if="scope.row.parkingStatus === 2">故障</span>
-            <span v-else>未知</span>
-          </template>
-        </el-table-column>
+        <el-table-column label="登录人" prop="inspectorName"></el-table-column>
+        <el-table-column label="所属路段" prop="roadName"></el-table-column>
       </el-table>
 
       <!--分页插件-->
@@ -61,17 +47,18 @@ export default {
   },
   methods: {
     getLogList() {
-      axios.get("/magnetometerLog/getPageById", {
-        params: {
-          pageNum: this.pageNum,
-          pageSize: this.pageSize,
-          id: this.id
-        }
-      })
-          .then(res => {
-            this.total = res.data.total;
-            this.logList = res.data.records;
-          })
+      console.log('后端没pdalog')
+      // axios.get("/pdaLog/getPageById", {
+      //   params: {
+      //     pageNum: this.pageNum,
+      //     pageSize: this.pageSize,
+      //     id: this.id
+      //   }
+      // })
+      //     .then(res => {
+      //       this.total = res.data.total;
+      //       this.logList = res.data.records;
+      //     })
     },
     handleSizeChange(newSize) {
       this.pageSize = newSize;
