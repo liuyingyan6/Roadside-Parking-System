@@ -9,7 +9,6 @@ import LoginLog from "@/views/log/LoginLog.vue";
 import OperationLog from "@/views/log/OperationLog.vue";
 import Magnetometer from "@/views/device/Magnetometer.vue";
 import MagnetometerLog from "@/views/device/MagnetometerLog.vue";
-import ManagerAccount from "@/views/permission/ManagerAccount";
 import Order from "@/views/permission/Order.vue";
 import OrderDetails from "@/views/secondaryMenu/OrderDetails.vue";
 

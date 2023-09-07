@@ -5,7 +5,7 @@
         <el-breadcrumb separator-class="el-icon-arrow-right">
           <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
           <el-breadcrumb-item>设备管理</el-breadcrumb-item>
-          <el-breadcrumb-item>地磁管理</el-breadcrumb-item>
+          <el-breadcrumb-item>pda管理</el-breadcrumb-item>
         </el-breadcrumb>
       </el-card>
     </el-row>
