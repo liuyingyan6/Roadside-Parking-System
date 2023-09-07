@@ -11,6 +11,8 @@ import Magnetometer from "@/views/device/Magnetometer.vue";
 import MagnetometerLog from "@/views/device/MagnetometerLog.vue";
 import Order from "@/views/permission/Order.vue";
 import OrderDetails from "@/views/secondaryMenu/OrderDetails.vue";
+import pdaLog from "@/views/device/PdaLog.vue";
+import pda from "@/views/device/pda.vue";
 
 Vue.use(VueRouter)
 
@@ -65,6 +67,16 @@ const routes = [
                 path: '/magnetometerLog/:id',
                 name: "MagnetometerLog",
                 component: MagnetometerLog
+            },
+            {
+                path: '/pda',
+                name: "pda",
+                component: pda
+            },
+            {
+                path: '/pdaLog/:id',
+                name: "pdaLog",
+                component: pdaLog
             },
             {
                 path: '/order',
