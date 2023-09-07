@@ -36,7 +36,13 @@
                     <el-table-column label="未缴费订单" prop="notPayCount"></el-table-column>
                     <el-table-column label="消费金额" prop="orderAmount"></el-table-column>
                     <el-table-column label="待缴费金额" prop="notPayAmount"></el-table-column>
-                    <el-table-column label="创建时间" prop="creatTime"></el-table-column>
+                    <el-table-column
+                            prop="createTime"
+                            label="创建时间"
+                            width="200"
+                            format="yyyy-MM-dd" value-format="yyyy-MM-dd">
+                        <template slot-scope="scope">{{ scope.row.createTime }}</template>
+                    </el-table-column>
                     <el-table-column label="操作" width="180px">
                         <template slot-scope="scope">
                             <el-button type="primary" size="mini" @click="">订单记录</el-button>
@@ -74,7 +80,7 @@
         data() {
             return {
                 pageNumber: 1,//自定义默认显示第1页
-                pageSize: 3, //自定义默认每页显示3条数据
+                pageSize: 5, //自定义默认每页显示3条数据
                 total: 0,
                 key: '',
                 CarList: [],

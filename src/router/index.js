@@ -55,12 +55,12 @@ const routes = [
                 component: User
             },
             {
-                path: '/login-log',
+                path: '/loginLog',
                 name: "LoginLog",
                 component: LoginLog
             },
             {
-                path: '/operation-log',
+                path: '/operationLog',
                 name: "OperationLog",
                 component: OperationLog
             },
@@ -70,7 +70,7 @@ const routes = [
                 component: Magnetometer
             },
             {
-                path: '/magnetometer-log',
+                path: '/magnetometerLog',
                 name: "MagnetometerLog",
                 component: MagnetometerLog
             },

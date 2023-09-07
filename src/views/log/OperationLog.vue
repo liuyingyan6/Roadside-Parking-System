@@ -45,7 +45,7 @@ export default {
   },
   methods: {
     getLogList() {
-      this.$axios.get("/operation-log/getPage", {
+      this.$axios.get("/operationLog/getPage", {
         params: {
           pageNum: this.pageNum,
           pageSize: this.pageSize,
