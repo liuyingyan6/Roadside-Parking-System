@@ -61,7 +61,7 @@ export default {
   },
   methods: {
     getLogList() {
-      axios.get("/magnetometer-log/getPageById", {
+      axios.get("/magnetometerLog/getPageById", {
         params: {
           pageNum: this.pageNum,
           pageSize: this.pageSize,
