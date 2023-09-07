@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Login from '@/views/login'
+import Login from '@/views/Login'
 import Home from '@/views/Home'
 import Role from '@/views/permission/Role'
 import Car from "@/views/permission/Car";
@@ -12,9 +12,6 @@ import MagnetometerLog from "@/views/device/MagnetometerLog.vue";
 import ManagerAccount from "@/views/permission/ManagerAccount";
 import Order from "@/views/permission/Order.vue";
 import OrderDetails from "@/views/secondaryMenu/OrderDetails.vue";
-import Cashflow from "@/views/finance/Cashflow";
-import Information from "@/views/sys/Information";
-import UserDetails from "@/views/secondaryMenu/UserDetails";
 
 Vue.use(VueRouter)
 
@@ -39,11 +36,6 @@ const routes = [
                 path: '/role',
                 name: "Role",
                 component: Role
-            },
-            {
-                path: '/manager',
-                name: "ManagerAccount",
-                component: ManagerAccount
             },
             {
                 path: '/car',
@@ -71,7 +63,7 @@ const routes = [
                 component: Magnetometer
             },
             {
-                path: '/magnetometerLog',
+                path: '/magnetometerLog/:id',
                 name: "MagnetometerLog",
                 component: MagnetometerLog
             },
@@ -84,21 +76,6 @@ const routes = [
                 path:'/orderDetails',
                 name: "OrderDetails",
                 component: OrderDetails
-            },
-            {
-                path:'/cashflow',
-                name: "Cashflow",
-                component: Cashflow
-            },
-            {
-                path:'/information',
-                name: "Information",
-                component: Information
-            },
-            {
-                path:`/userDetails/:id`,
-                name: "UserDetails",
-                component: UserDetails
             }
 
         ]
