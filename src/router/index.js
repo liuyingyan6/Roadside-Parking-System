@@ -43,6 +43,11 @@ const routes = [
                 component: Car
             },
             {
+                path: '/manager',
+                name: "ManagerAccount",
+                component: () => import('@/views/permission/ManagerAccount'),
+            },
+            {
                 path: '/inspector',
                 name: "Inspector",
                 component: () => import('@/views/staffSys/Inspector'),
