@@ -53,6 +53,8 @@ export default {
         console.log("", res);
         this.total = res.data.total;
         this.logList = res.data.records;
+      }).catch(error=>{
+        this.$message.error(error);
       })
     },
     handleSizeChange(newSize) {
