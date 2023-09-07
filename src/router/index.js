@@ -12,6 +12,9 @@ import MagnetometerLog from "@/views/device/MagnetometerLog.vue";
 import ManagerAccount from "@/views/permission/ManagerAccount";
 import Order from "@/views/permission/Order.vue";
 import OrderDetails from "@/views/secondaryMenu/OrderDetails.vue";
+import Cashflow from "@/views/finance/Cashflow";
+import Information from "@/views/sys/Information";
+import UserDetails from "@/views/secondaryMenu/UserDetails";
 
 Vue.use(VueRouter)
 
@@ -88,6 +91,21 @@ const routes = [
                 path:'/orderDetails',
                 name: "OrderDetails",
                 component: OrderDetails
+            },
+            {
+                path:'/cashflow',
+                name: "Cashflow",
+                component: Cashflow
+            },
+            {
+                path:'/information',
+                name: "Information",
+                component: Information
+            },
+            {
+                path:`/userDetails/:id`,
+                name: "UserDetails",
+                component: UserDetails
             }
 
         ]
