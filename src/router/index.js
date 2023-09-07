@@ -38,6 +38,11 @@ const routes = [
                 component: Role
             },
             {
+                path: '/manager',
+                name: "ManagerAccount",
+                component: ManagerAccount
+            },
+            {
                 path: '/car',
                 name: "Car",
                 component: Car
