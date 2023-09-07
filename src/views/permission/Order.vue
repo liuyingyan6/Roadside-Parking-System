@@ -292,7 +292,7 @@ export default {
 
     //订单详情
     handleParticulars(index, row) {
-      this.$router.push({ path: `/orderDetails` });
+      this.$router.push({ path: `/orderDetails/${row.id}` });
     },
 
     //显示添加的对话框

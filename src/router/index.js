@@ -85,13 +85,19 @@ const routes = [
                 component: Order,
             },
             {
-                path:'/orderDetails',
+                path:'/orderDetails/:id',
                 name: "OrderDetails",
                 component: OrderDetails
-            }
+            },
+            {
+                path: '/information',
+                name: 'Information',
+                component: () => import('@/views/sys/Information'),
+            },
 
         ]
-    }
+    },
+
 ]
 
 const router = new VueRouter({
