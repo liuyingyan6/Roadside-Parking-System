@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-row :gutter="12" style="margin-bottom: 20px">
+        <el-row :gutter="12">
             <el-card shadow="always">
                 <el-breadcrumb separator-class="el-icon-arrow-right">
                     <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
@@ -34,27 +34,24 @@
                     <el-table-column label="所属用户" prop="userName"></el-table-column>
                     <el-table-column label="订单数量" prop="orderCount"></el-table-column>
                     <el-table-column label="未缴费订单" prop="notPayCount"></el-table-column>
-                    <el-table-column label="消费金额" prop="orderAmount"></el-table-column>
-                    <el-table-column label="待缴费金额" prop="notPayAmount"></el-table-column>
-                    <el-table-column
-                            prop="createTime"
-                            label="创建时间"
-                            width="200"
-                            format="yyyy-MM-dd" value-format="yyyy-MM-dd">
-                        <template slot-scope="scope">{{ scope.row.createTime }}</template>
-                    </el-table-column>
-                    <el-table-column label="操作" width="180px">
+                    <el-table-column label="已消费金额" prop="orderAmount">
                         <template slot-scope="scope">
-                            <el-button type="primary" size="mini" @click="">订单记录</el-button>
-                            <el-dropdown>
-                                <el-button type="primary" plain size="mini">
-                                    ...<i class="el-icon-arrow-down el-icon--right"></i>
-                                </el-button>
-                                <el-dropdown-menu slot="dropdown">
-                                    <el-dropdown-item>解绑</el-dropdown-item>
-                                    <el-dropdown-item>禁用</el-dropdown-item>
-                                </el-dropdown-menu>
-                            </el-dropdown>
+                            <span v-if="scope.row.orderAmount">{{ scope.row.orderAmount }}</span>
+                            <span v-else style="color: #afadad">暂无</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="待缴费金额" prop="notPayAmount">
+                        <template slot-scope="scope">
+                            <span v-if="scope.row.notPayAmount">{{ scope.row.notPayAmount }}</span>
+                            <span v-else style="color: #afadad">暂无</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="创建时间" prop="creatTime"></el-table-column>
+                    <el-table-column label="操作" width="250px">
+                        <template slot-scope="scope">
+                            <el-button type="primary" size="mini" @click="getOrder(scope)">订单记录</el-button>
+                            <el-button type="primary" plain size="mini" @click="lift(scope)">解绑</el-button>
+                            <el-button type="primary" plain size="mini" @click="">禁用</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -76,6 +73,7 @@
     </div>
 </template>
 <script>
+    import axios from 'axios';
     export default {
         data() {
             return {
@@ -84,10 +82,34 @@
                 total: 0,
                 key: '',
                 CarList: [],
+                userId: '',
+                carId: '',
+
 
             }
         },
         methods: {
+            //解绑
+            lift(scope) {
+                const carNumber = scope.row.carNumber;
+                this.$axios.get("/car/getCarInfo", {
+                    params: {
+                        carNumber: carNumber,
+                    }
+                }).then(resp => {
+                    this.userId = resp.data.userId;
+                    this.carId = resp.data.id;
+                })
+                axios.put(`/car/lift?userId=${this.userId}&carId=${this.carId}`).then(resp => {
+                    console.log(resp)
+                })
+
+            },
+            //订单记录
+            getOrder(scope) {
+                const carNumber = scope.row.carNumber;
+                location.href = '/CarOrder?carNumber=' + carNumber;
+            },
             //导出按钮
             exportCarList() {
                 const token = localStorage.getItem('accessToken');
@@ -100,7 +122,7 @@
                         const blob = new Blob([xhr.response]); // 创建blob对象
                         const link = document.createElement('a');
                         link.href = window.URL.createObjectURL(blob); // 创建下载链接
-                        link.download = '地磁信息.xlsx'; // 设置下载的文件名
+                        link.download = '车辆信息.xlsx'; // 设置下载的文件名
                         link.click(); // 模拟点击下载链接
                         window.URL.revokeObjectURL(link.href); // 释放URL对象
                     }
