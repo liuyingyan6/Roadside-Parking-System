@@ -9,10 +9,15 @@ import LoginLog from "@/views/log/LoginLog.vue";
 import OperationLog from "@/views/log/OperationLog.vue";
 import Magnetometer from "@/views/device/Magnetometer.vue";
 import MagnetometerLog from "@/views/device/MagnetometerLog.vue";
+import ManagerAccount from "@/views/permission/ManagerAccount";
 import Order from "@/views/permission/Order.vue";
 import OrderDetails from "@/views/secondaryMenu/OrderDetails.vue";
+import Cashflow from "@/views/finance/Cashflow";
+import Information from "@/views/sys/Information";
+import UserDetails from "@/views/secondaryMenu/UserDetails";
 import pdaLog from "@/views/device/PdaLog.vue";
 import pda from "@/views/device/pda.vue";
+import CarOrder from "@/views/permission/CarOrder";
 
 Vue.use(VueRouter)
 
@@ -39,9 +44,21 @@ const routes = [
                 component: Role
             },
             {
+                path: '/manager',
+                name: "ManagerAccount",
+                component: ManagerAccount
+            },
+            {
                 path: '/car',
                 name: "Car",
                 component: Car
+            },
+            {
+                path: '/inspector',
+                name: "Inspector",
+                component: () => import('@/views/staffSys/Inspector'),
+                meta: { title: 'Inspector.vue页面', icon: 'table' },
+                // hidden: true
             },
             {
                 path: '/user',
@@ -87,6 +104,26 @@ const routes = [
                 path:'/orderDetails',
                 name: "OrderDetails",
                 component: OrderDetails
+            },
+            {
+                path:'/cashflow',
+                name: "Cashflow",
+                component: Cashflow
+            },
+            {
+                path:'/information',
+                name: "Information",
+                component: Information
+            },
+            {
+                path:`/userDetails/:id`,
+                name: "UserDetails",
+                component: UserDetails
+            },
+            {
+                path:'/carOrder',
+                name: "CarOrder",
+                component: CarOrder
             }
 
         ]
