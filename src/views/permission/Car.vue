@@ -22,7 +22,7 @@
                             <el-button type="primary" icon="el-icon-search" @click="getCarList">查询</el-button>
                         </el-form-item>
                         <el-form-item>
-                                <el-button type="primary" @click="exportCarList" >批量导出</el-button>
+                            <el-button type="primary" @click="exportCarList">批量导出</el-button>
                         </el-form-item>
                     </el-form>
                 </el-row>
@@ -34,26 +34,29 @@
                     <el-table-column label="所属用户" prop="userName"></el-table-column>
                     <el-table-column label="订单数量" prop="orderCount"></el-table-column>
                     <el-table-column label="未缴费订单" prop="notPayCount"></el-table-column>
-                    <el-table-column label="消费金额" prop="orderAmount"></el-table-column>
-                    <el-table-column label="待缴费金额" prop="notPayAmount"></el-table-column>
-                    <el-table-column label="创建时间" prop="creatTime"></el-table-column>
-                    <el-table-column label="操作"  width="180px">
+                    <el-table-column label="已消费金额" prop="orderAmount">
                         <template slot-scope="scope">
-                            <el-button type="primary" size="mini" @click="">订单记录</el-button>
-                            <el-dropdown>
-                                <el-button type="primary" plain size="mini">
-                                    ...<i class="el-icon-arrow-down el-icon--right"></i>
-                                </el-button>
-                                <el-dropdown-menu slot="dropdown">
-                                    <el-dropdown-item>解绑</el-dropdown-item>
-                                    <el-dropdown-item>禁用</el-dropdown-item>
-                                </el-dropdown-menu>
-                            </el-dropdown>
+                            <span v-if="scope.row.orderAmount">{{ scope.row.orderAmount }}</span>
+                            <span v-else style="color: #afadad">暂无</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="待缴费金额" prop="notPayAmount">
+                        <template slot-scope="scope">
+                            <span v-if="scope.row.notPayAmount">{{ scope.row.notPayAmount }}</span>
+                            <span v-else style="color: #afadad">暂无</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="创建时间" prop="creatTime"></el-table-column>
+                    <el-table-column label="操作" width="250px">
+                        <template slot-scope="scope">
+                            <el-button type="primary" size="mini" @click="getOrder(scope)">订单记录</el-button>
+                            <el-button type="primary" plain size="mini" @click="lift(scope)">解绑</el-button>
+                            <el-button type="primary" plain size="mini" @click="">禁用</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
 
-<!--                 分页组件 total总条数 page-size：每页大写 current-page 当前页码 page-sizes：下拉列表 page-size：页面大小 -->
+                <!--                 分页组件 total总条数 page-size：每页大写 current-page 当前页码 page-sizes：下拉列表 page-size：页面大小 -->
                 <el-pagination
                         @size-change="handleSizeChange"
                         @current-change="handleCurrentChange"
@@ -70,18 +73,43 @@
     </div>
 </template>
 <script>
+    import axios from 'axios';
     export default {
         data() {
             return {
                 pageNumber: 1,//自定义默认显示第1页
-                pageSize: 3, //自定义默认每页显示3条数据
+                pageSize: 5, //自定义默认每页显示3条数据
                 total: 0,
-                key:'',
-               CarList: [],
+                key: '',
+                CarList: [],
+                userId: '',
+                carId: '',
+
 
             }
         },
         methods: {
+            //解绑
+            lift(scope) {
+                const carNumber = scope.row.carNumber;
+                this.$axios.get("/car/getCarInfo", {
+                    params: {
+                        carNumber: carNumber,
+                    }
+                }).then(resp => {
+                    this.userId = resp.data.userId;
+                    this.carId = resp.data.id;
+                })
+                axios.put(`/car/lift?userId=${this.userId}&carId=${this.carId}`).then(resp => {
+                    console.log(resp)
+                })
+
+            },
+            //订单记录
+            getOrder(scope) {
+                const carNumber = scope.row.carNumber;
+                location.href = '/CarOrder?carNumber=' + carNumber;
+            },
             //导出按钮
             exportCarList() {
                 const token = localStorage.getItem('accessToken');
@@ -89,12 +117,12 @@
                 xhr.open("GET", "http://localhost:9090/car/exportExcel");
                 xhr.setRequestHeader("Authorization", "Bearer " + token);
                 xhr.responseType = 'blob'; // 设置响应类型为blob
-                xhr.onload = function() {
+                xhr.onload = function () {
                     if (xhr.status === 200) {
                         const blob = new Blob([xhr.response]); // 创建blob对象
                         const link = document.createElement('a');
                         link.href = window.URL.createObjectURL(blob); // 创建下载链接
-                        link.download = '地磁信息.xlsx'; // 设置下载的文件名
+                        link.download = '车辆信息.xlsx'; // 设置下载的文件名
                         link.click(); // 模拟点击下载链接
                         window.URL.revokeObjectURL(link.href); // 释放URL对象
                     }
@@ -110,17 +138,17 @@
                 this.pageSize = val;
                 this.getCarList();
             },
-            getCarList(){
-                this.$axios.get("/car/carList",{
-                    params:{
+            getCarList() {
+                this.$axios.get("/car/carList", {
+                    params: {
                         pageSize: this.pageSize,
-                        pageNum : this.pageNumber,
-                        key:this.key
+                        pageNum: this.pageNumber,
+                        key: this.key
                     }
-                }).then(resp=>{
+                }).then(resp => {
                     console.log(resp)
-                    this.CarList=resp.data.list;
-                    this.total=resp.data.total;
+                    this.CarList = resp.data.list;
+                    this.total = resp.data.total;
                 })
 
             }
