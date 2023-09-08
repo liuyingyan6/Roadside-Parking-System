@@ -18,6 +18,8 @@ import UserDetails from "@/views/secondaryMenu/UserDetails";
 import pdaLog from "@/views/device/PdaLog.vue";
 import pda from "@/views/device/pda.vue";
 import CarOrder from "@/views/permission/CarOrder";
+import Road from "@/views/road/Road";
+import Parking from "@/views/road/Parking";
 
 Vue.use(VueRouter)
 
@@ -124,8 +126,17 @@ const routes = [
                 path:'/carOrder',
                 name: "CarOrder",
                 component: CarOrder
+            },
+            {
+                path:'/road',
+                name: "Road",
+                component: Road
+            },
+            {
+                path:'/parking',
+                name: "Parking",
+                component: Parking
             }
-
         ]
     }
 ]
