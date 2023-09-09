@@ -16,10 +16,13 @@
                 <el-row>
                     <el-form :inline="true">
 
-                        <el-form-item  prop="status">
+                        <el-form-item  prop="">
                             <el-select v-model="status">
-                                <el-option label="已缴费" :value="0"></el-option>
+                                <el-option label="已缴费" :value="2"></el-option>
                                 <el-option label="待缴费" :value="1"></el-option>
+                                <el-option label="退款中" :value="3"></el-option>
+                                <el-option label="已退款" :value="4"></el-option>
+                                <el-option label="超时未支付" :value="5"></el-option>
                             </el-select>
                         </el-form-item>
 
@@ -58,7 +61,10 @@
                     <el-table-column label="订单状态" prop="status">
                         <template slot-scope="scope">
                             <el-tag v-if="scope.row.status==1" type="danger">待缴费</el-tag>
-                            <el-tag v-else type="success">已缴费</el-tag>
+                            <el-tag v-if="scope.row.status==2" type="primary">已缴费</el-tag>
+                            <el-tag v-if="scope.row.status==3" type="danger">退款中</el-tag>
+                            <el-tag v-if="scope.row.status==4" type="primary">已退款</el-tag>
+                            <el-tag v-if="scope.row.status==5" type="danger">超时未支付</el-tag>
                         </template>
                     </el-table-column>
                     <el-table-column label="支付方式" prop="payType">
@@ -148,14 +154,21 @@
 
             },
             find(){
-                const statusValue = this.status;
-                console.log("{}",statusValue)
-                //每次都将遍历AllList的值，将不会受到变化的影响，将符合的数据放进filteredOrders
-                const filteredOrders = this.AllList.filter(order =>order.status === statusValue);
-                console.log("{}",filteredOrders);
-                //将filteredOrders传输给表单data
-                this.CarOrderList=filteredOrders;
-                this.status='';
+                if (this.status===null ){
+                    return;
+                }if (this.status==='') {
+                    return;
+                }else{
+                    const statusValue = this.status;
+                    console.log("{}",statusValue)
+                    //每次都将遍历AllList的值，将不会受到变化的影响，将符合的数据放进filteredOrders
+                    const filteredOrders = this.AllList.filter(order =>order.status === statusValue);
+                    console.log("{}",filteredOrders);
+                    //将filteredOrders传输给表单data
+                    this.CarOrderList=filteredOrders;
+                    this.status='';
+                }
+
 
 
             },
