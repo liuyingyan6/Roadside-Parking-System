@@ -67,7 +67,6 @@
                     //完成页面校验
                     if (!valid) return;
                     this.$axios.post('/manager/login',this.loginForm).then(res=>{
-                        console.log({},res);
                         if(res.code == 200){
                             this.$message.success("登录成功！");
                             //存储大小令牌
