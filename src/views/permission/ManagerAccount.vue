@@ -38,7 +38,7 @@
                 <el-table-column label="操作">
                     <template slot-scope="scope">
                         <el-button type="primary" size="mini" @click="showEditDialog(scope.row)">编辑</el-button>
-                        <el-button type="danger" size="mini" @click="removeRoleById(scope.row.id)">删除</el-button>
+                        <el-button type="danger" size="mini" @click="removeManagerByAccount(scope.row.account)">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -75,6 +75,16 @@
                     <el-input v-model="addManagerForm.telephone"></el-input>
                 </el-form-item>
 
+                <el-form-item label="所属部门"><br>
+                    <el-select v-model="addManagerForm.departmentId" placeholder="请选择部门">
+                        <el-option
+                                v-for="item in departmentData"
+                                :key="item.id"
+                                :label="item.departmentName"
+                                :value="item.id"
+                        ></el-option>
+                    </el-select>
+                </el-form-item>
 
                 <el-form-item label="角色配置"><br>
                 <el-select v-model="addManagerForm.roleId" placeholder="请选择角色">
@@ -94,20 +104,56 @@
             </span>
         </el-dialog>
 
+
         <!--修改角色-->
         <el-dialog title="修改角色" :visible.sync="editDialogVisible" width="30%">
             <el-form
-                    :model="editRoleForm"
-                    ref="editRoleFormRef"
+                    :model="editManagerForm"
+                    ref="editManagerFormRef"
                     :label-width="formLableWidth"
                     class="demo-ruleForm"
             >
-                <el-form-item label="角色名称">
-                    <el-input v-model="editRoleForm.name"></el-input>
+                <el-form-item label="账号">
+                    <el-input disabled v-model="editManagerForm.account"></el-input>
                 </el-form-item>
+
+                <el-form-item label="密码">
+                    <el-input v-model="editManagerForm.password"></el-input>
+                </el-form-item>
+
+                <el-form-item label="确认密码">
+                    <el-input v-model="editManagerForm.repassword"></el-input>
+                </el-form-item>
+
+                <el-form-item label="手机号码">
+                    <el-input v-model="editManagerForm.telephone"></el-input>
+                </el-form-item>
+
+                <el-form-item label="所属部门"><br>
+                    <el-select v-model="editManagerForm.departmentId" placeholder="请选择部门">
+                        <el-option
+                                v-for="item in departmentData"
+                                :key="item.id"
+                                :label="item.departmentName"
+                                :value="item.id"
+                        ></el-option>
+                    </el-select>
+                </el-form-item>
+
+                <el-form-item label="角色配置"><br>
+                    <el-select v-model="editManagerForm.roleId" placeholder="请选择角色">
+                        <el-option
+                                v-for="item in roleData"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id"
+                        ></el-option>
+                    </el-select>
+                </el-form-item>
+
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="editRole">确 定</el-button>
+                <el-button type="primary" @click="editManager">确 定</el-button>
                 <el-button @click="editDialogVisible = false">取 消</el-button>
             </span>
         </el-dialog>
@@ -130,23 +176,6 @@
     export default {
         data() {
             return {
-                formLableWidth:"",
-                addDialogVisible: false,//新增弹出框
-                editDialogVisible: false,//修改弹出框
-                pageNum: 1,
-                pageSize: 5,
-                total: 0,
-                account: "", // 搜索框&表单角色名称
-                managerList: [], // 表单数据
-                roleData:[],
-                //新增弹框数据
-                addManagerForm: {
-                    name:"",
-                    account: "",
-                    password: "",
-                    telephone: "",
-                    roleId: ''
-                },
                 addFormRules: {
                     account: [
                         {required: true, message: "用户名必填", trigger: "blur"},
@@ -169,26 +198,66 @@
                         {required: true, message: "手机号码必填", trigger: "blur"}
                     ]
                 },
+
+                formLableWidth:"",
+                addDialogVisible: false,//新增弹出框
+                editDialogVisible: false,//修改弹出框
+                pageNum: 1,
+                pageSize: 5,
+                total: 0,
+                account: "", // 搜索框&表单角色名称
+                managerList: [], // 表单数据
+                roleData:[],
+                departmentData:[],
+                //新增弹框数据
+                addManagerForm: {
+                    name:"",
+                    account: "",
+                    password: "",
+                    telephone: "",
+                    roleId: '',
+                    departmentId: ''
+                },
                 //修改弹框数据
-                editRoleForm: {
-                    id: -1,
-                    name: ""
+                editManagerForm: {
+                    account: "",
+                    password: "",
+                    telephone: "",
+                    roleId: '',
+                    departmentId: ''
                 },
-                //授权弹框数据
-                authorizationForm: {
-                    id: "",
-                    name: "",
-                    permissionData: [] //选择的权限数据
-                },
-                //授权弹框
-                defaultProps: {
-                    children: 'children',
-                    label: 'name'
-                },
-                defaultPermissionCheck:[],//默认权限选中
             };
         },
         methods: {
+
+            removeManagerByAccount(account) {
+                console.log({},account)
+                this.$confirm('是否真的删除这条数据?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$axios.delete('/manager/delete/' + account).then(res => {
+                        if (res.code == 200) {
+                            this.$message.success("删除成功");
+                            this.pageNum = 1;
+                            this.getManagerList();// 刷新表单数据
+                        } else {
+                            this.$message.error(res.msg);
+                        }
+                    })
+                }).catch(() => {
+                    this.$message.info("已取消删除");
+                });
+            },
+
+            async showEditDialog(row){
+                console.log(row)
+                this.editManagerForm = row
+                this.editDialogVisible = true
+                await this.searchRoleData();//查询所有的角色数据
+                await this.searchDepartmentData()
+            },
 
             validatePassword(rule, value, callback) {
                 if (value !== this.addManagerForm.password) {
@@ -221,6 +290,21 @@
                 this.addDialogVisible = true;
                 this.addRoleForm = false;
                 await this.searchRoleData();//查询所有的角色数据
+                await this.searchDepartmentData();//查询所有的角色数据
+            },
+            //查询所有部门
+            async searchDepartmentData(){
+                await new Promise((resolve,reject)=>{
+                    this.$axios.get('/department/all').then(res=>{
+                        if(res.code == 200){
+                            console.log({},res.data)
+                            this.departmentData = res.data;
+                        }else{
+                            this.$message.error(res.msg);
+                        }
+                        resolve(true);//表示异步方法执行完成
+                    })
+                })
             },
             //查询所有的角色数据
             async searchRoleData(){
@@ -237,8 +321,23 @@
                 })
             },
 
+            editManager() {
+                console.log({},this.editManagerForm)
+                this.$axios.post('/manager/update', this.editManagerForm).then(res => {
+                    if (res.code == 200) {
+                        this.$message.success("修改成功");
+                        this.editDialogVisible = false;
+                        this.editManagerForm = {};
+                        this.getManagerList();//重新请求数据，刷新数据列表
+                    } else {
+                        this.$message.error(res.msg);
+                    }
+                })
+            },
+
             //提交新增
             addRole() {
+                console.log({},this.addManagerForm)
                 this.$axios.post('/manager/add', this.addManagerForm).then(res => {
                     if (res.code == 200) {
                         this.$message.success("新增成功");

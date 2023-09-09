@@ -105,14 +105,12 @@
                     <el-table-column label="操作">
                         <template slot-scope="scope">
                             <el-button-group>
-                                <el-button
-                                        type="success" icon="el-icon-edit" plain
-                                        @click="handleFeedback(scope.$index,scope.row)">处理
-                                </el-button>
-                                <el-button
-                                        type="primary" icon="el-icon-view" plain
-                                        @click="handleView(scope.$index,scope.row)">详情
-                                </el-button>
+                                <!-- 只有当处理结果为未处理时才显示处理按钮 -->
+                                <el-button v-if="scope.row.state !== 0" type="success" icon="el-icon-edit" plain
+                                           @click="handleFeedback(scope.$index, scope.row)">处理</el-button>
+
+                                <el-button type="primary" icon="el-icon-view" plain @click="handleView(scope)">详情</el-button>
+
                             </el-button-group>
                         </template>
                     </el-table-column>
@@ -172,6 +170,7 @@
             saveFeedback() {
                 console.log({},this.fId)
                 console.log({},this.formData.information)
+                console.log({},this.formData)
                 inspectorFeedback.saveFeedback(this.fId,this.formData.information).then(res => {
                     this.$message.success('处理完毕')
                 }).finally(() => {
@@ -212,7 +211,9 @@
                 this.fId = row.feedbackId; // 将当前行的反馈单号赋值给currentFeedbackId
                 this.dialogFormVisible = true;
             },
-            handleView() {
+            handleView(scope) {
+                const feedbackId = scope.row.feedbackId;
+                location.href = '/InspectorFeedbackDetail?feedbackId=' + feedbackId;
 
             },
             //重置

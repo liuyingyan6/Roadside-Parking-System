@@ -11,9 +11,9 @@ export default {
 
     saveFeedback(fId,information) {
         return request({
-            url: `/inspectorFeedback/handleFeedback/${fId}`,
+            url: `/inspectorFeedback/handleFeedback/${fId}/${information}`,
             method: 'post',
-            data: information
+            // data: information
         })
     }
 }
