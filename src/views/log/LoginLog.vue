@@ -13,6 +13,7 @@
     <el-card>
       <!--信息表单-->
       <el-table :data="logList" border stripe>
+        <el-table-column label="用户id" prop="userId"></el-table-column>
         <el-table-column label="时间" prop="createTime"></el-table-column>
         <el-table-column label="IP" prop="ip"></el-table-column>
         <el-table-column label="地区" prop="location"></el-table-column>
