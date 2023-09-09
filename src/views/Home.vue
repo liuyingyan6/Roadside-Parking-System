@@ -122,7 +122,7 @@
 
     .el-aside {
         background-color: #333744;
-        height: 94vh;
+        height: 115vh;
 
         .el-menu {
             border-right: 0;
