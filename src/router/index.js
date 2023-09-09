@@ -20,6 +20,8 @@ import pda from "@/views/device/pda.vue";
 import CarOrder from "@/views/permission/CarOrder";
 import Road from "@/views/road/Road";
 import Parking from "@/views/road/Parking";
+import UserFeedback from "@/views/feedback/UserFeedback";
+import InspectorFeedback from "@/views/feedback/InspectorFeedback";
 
 Vue.use(VueRouter)
 
@@ -136,6 +138,16 @@ const routes = [
                 path:'/parking',
                 name: "Parking",
                 component: Parking
+            },
+            {
+                path:'/userFeedback',
+                name: "UserFeedback",
+                component: UserFeedback
+            },
+            {
+                path:'/inspectorFeedback',
+                name: "InspectorFeedback",
+                component: InspectorFeedback
             }
         ]
     }
