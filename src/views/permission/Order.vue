@@ -41,12 +41,12 @@
               width="120">
           </el-table-column>
           <!-- 数据列 prop属性名 label显示列名  -->
-<!--          <el-table-column-->
-<!--              prop="createTime"-->
-<!--              label="提交时间"-->
-<!--              width="200">-->
-<!--            <template slot-scope="scope">{{ scope.row.dateRegistration }}</template>-->
-<!--          </el-table-column>-->
+          <!--          <el-table-column-->
+          <!--              prop="createTime"-->
+          <!--              label="提交时间"-->
+          <!--              width="200">-->
+          <!--            <template slot-scope="scope">{{ scope.row.dateRegistration }}</template>-->
+          <!--          </el-table-column>-->
           <el-table-column
               prop="createTime"
               label="提交时间"
@@ -83,12 +83,12 @@
               width="120"
           >
             <template slot-scope="scope">
-<!--              <el-tag-->
-<!--                  :type="stateTagMap[scope.row.state].type"-->
-<!--                  disable-transitions-->
-<!--              >-->
-<!--                {{ stateTagMap[scope.row.state].text }}-->
-<!--              </el-tag>-->
+              <!--              <el-tag-->
+              <!--                  :type="stateTagMap[scope.row.state].type"-->
+              <!--                  disable-transitions-->
+              <!--              >-->
+              <!--                {{ stateTagMap[scope.row.state].text }}-->
+              <!--              </el-tag>-->
               <el-tag
                   :type="stateTagMap[scope.row.status] ? stateTagMap[scope.row.status].type : 'default'"
                   disable-transitions
@@ -191,11 +191,11 @@ export default {
     return {
 
       stateTagMap: {
-        0: { type: 'success', text: '进行中' },
-        1: { type: 'info', text: '待缴费' },
-        2: { type: 'warning', text: '已缴费' },
-        3: { type: 'danger', text: '已完成' },
-        4: { type: 'primary', text: '已退款' }
+        // 0: {type: 'success', text: '进行中'},
+        // 1: {type: 'info', text: '待缴费'},
+        // 2: {type: 'warning', text: '已缴费'},
+        // 3: {type: 'danger', text: '已完成'},
+        // 4: {type: 'primary', text: '已退款'}
       },
       param: {
         carNumber: ""
@@ -213,16 +213,16 @@ export default {
       formLabelWidth: '120px',
 
       roleList: [
-        { status: 0 },
-        { status: 1 },
-        { status: 2 },
-        { status: 3 },
-        { status: 4 }
+        // {status: 0},
+        // {status: 1},
+        // {status: 2},
+        // {status: 3},
+        // {status: 4}
       ], // 表单数据
       //分页查询提交的参数
 
-        pageNum: 1,
-        pageSize: 5,
+      pageNum: 1,
+      pageSize: 5,
       total: 0,
 
       //显示的属性
@@ -288,9 +288,14 @@ export default {
 
 
     //订单详情
-    handleParticulars(index, row) {
-      this.$router.push({ path: `/orderDetails` });
+    handleParticulars(id, row) {
+      this.$router.push({
+        name: 'OrderDetails',
+        params: { id }, // Pass the 'id' parameter to the route
+        query: { orderData: JSON.stringify(row) }, // Pass 'row' as a query parameter (optional)
+      });
     },
+
 
     //显示添加的对话框
     showDialog() {
@@ -368,7 +373,7 @@ export default {
           carNumber: this.param.carNumber
         }
       }).then(res => {
-        console.log("{}",res)
+        console.log("{}", res)
         this.roleList = res.data.list;
         this.total = res.data.total;
       });

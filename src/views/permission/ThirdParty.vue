@@ -7,7 +7,7 @@
       <el-breadcrumb-item>角色列表</el-breadcrumb-item>
     </el-breadcrumb>
 
-    <el-button type="success" style="width: 100px; height: 70px; float: right; font-size: 16px;">
+    <el-button type="success" style="width: 100px; height: 50px; float: right; font-size: 16px;">
       保存
     </el-button>
     <el-form ref="form" :model="form" label-width="120px" style="width: 220%;height:0px; font-size: 0px;">
