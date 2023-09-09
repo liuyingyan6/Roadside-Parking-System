@@ -23,15 +23,27 @@
                             </el-select>
                         </el-form-item>
 
+                        <el-form-item>
+                            <el-button type="primary" icon="el-icon-search" @click="find">查询</el-button>
+                        </el-form-item>
+
                         <el-form-item  prop="comDate">
-                            <el-date-picker v-model="comDate" type="datetime" placeholder="选择日期时间"
-                                            value-format="yyyy-MM-dd HH:mm:ss">
-                            </el-date-picker>
+                            <div class="block">
+                                <span class="demonstration"></span>
+                                <el-date-picker
+                                        value-format="yyyy-MM-dd HH:mm:ss"
+                                        v-model="value1"
+                                        type="datetimerange"
+                                        range-separator="至"
+                                        start-placeholder="开始日期"
+                                        end-placeholder="结束日期">
+                                </el-date-picker>
+                            </div>
                         </el-form-item>
 
 
                         <el-form-item>
-                            <el-button type="primary" icon="el-icon-search" @click="find">查询</el-button>
+                            <el-button type="primary" icon="el-icon-search" @click="getTime">查询时间</el-button>
                             <el-button type="primary" icon="el-icon-search" @click="reset">重置</el-button>
                         </el-form-item>
                     </el-form>
@@ -53,7 +65,7 @@
                         <template slot-scope="scope">
                             <el-tag v-if="scope.row.payType==1" type="primary">支付宝付款</el-tag>
                             <el-tag v-if="scope.row.payType==0" type="success">微信支付</el-tag>
-                            <el-tag v-else type="danger">未知</el-tag>
+                            <el-tag v-if="scope.row.payType==null" type="danger">未知</el-tag>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -88,15 +100,51 @@
                 orderNumber:'',
                 status:'',
                 comDate:'',
+                value1: [],
+                date:[],
+                orderNum:[],
+                listByTime:[],
 
             }
         },
         methods: {
+            getTime: function () {
+                console.log(this.value1);
+                // 获取起始日期
+                const startDate = this.value1[0];
+                const endDate = this.value1[1];
+
+                console.log(startDate);
+                console.log(endDate);
+
+                this.$axios.get("/car/getTime", {
+                    params: {
+                        startDate: startDate,
+                        endDate: endDate
+                    }
+                }).then(resp => {
+                    console.log("{}", resp);
+                    this.orderNum = resp.data
+                    this.CarOrderList.forEach(e=>{
+                        this.orderNum.forEach(order=>{
+                            if (order===e.orderNumber){
+                                this.listByTime.push(e);
+                            }
+                        })
+                    })
+                    this.CarOrderList=this.listByTime;
+
+                    // 处理响应结果
+                }).catch(error => {
+                    // 处理错误
+                });
+            },
             reset(){
                 this.orderNumber='';
                 this.status='';
                 this.comDate='';
                 this.CarOrderList=this.AllList;
+                this.value1='';
 
             },
             find(){
@@ -131,12 +179,12 @@
 
             //分页
             handleCurrentChange(val) {
-                // this.pageNumber = val;
-                // this.getCarOrderList();
+                this.pageNumber = val;
+                this.getCarOrderList();
             },
             handleSizeChange(val) {
-                // this.pageSize = val;
-                // this.getCarOrderList();
+                this.pageSize = val;
+                this.getCarOrderList();
             },
 
 

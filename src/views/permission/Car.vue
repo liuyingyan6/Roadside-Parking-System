@@ -51,7 +51,6 @@
                         <template slot-scope="scope">
                             <el-button type="primary" size="mini" @click="getOrder(scope)">订单记录</el-button>
                             <el-button type="primary" plain size="mini" @click="lift(scope)">解绑</el-button>
-                            <el-button type="primary" plain size="mini" @click="">禁用</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -61,7 +60,7 @@
                         @size-change="handleSizeChange"
                         @current-change="handleCurrentChange"
                         :current-page="pageNumber"
-                        :page-sizes="[3, 6, 9, 12]"
+                        :page-sizes="[5, 10, 15, 20]"
                         :page-size="pageSize"
                         layout="total, sizes, prev, pager, next, jumper"
                         :total="total">
@@ -73,7 +72,6 @@
     </div>
 </template>
 <script>
-    import axios from 'axios';
     export default {
         data() {
             return {
@@ -82,29 +80,46 @@
                 total: 0,
                 key: '',
                 CarList: [],
-                userId: '',
-                carId: '',
+                    // userId: '',
+                    // carId: '',
+                disabled: false, // 默认情况下按钮不禁用
 
 
             }
         },
         methods: {
+
             //解绑
             lift(scope) {
+                console.log(scope.row.notPayCount)
+                if (scope.row.notPayCount!=0){
+                    this.$message.error('此用户有待缴费的订单，解绑失败');
+                    return;
+                }
                 const carNumber = scope.row.carNumber;
                 this.$axios.get("/car/getCarInfo", {
                     params: {
                         carNumber: carNumber,
                     }
                 }).then(resp => {
-                    this.userId = resp.data.userId;
-                    this.carId = resp.data.id;
-                })
-                axios.put(`/car/lift?userId=${this.userId}&carId=${this.carId}`).then(resp => {
-                    console.log(resp)
+                    console.log("{}",resp)
+                    const userId = resp.data.userId;
+                    const carId = resp.data.id;
+                    console.log("{}",userId,carId)
+
+                    this.$axios.post(`/car/lift?carId=${carId}&userId=${userId}`)
+                        .then(resp => {
+                        console.log(resp);
+                        this.getCarList();
+
+                    })
                 })
 
+
+
+
             },
+
             //订单记录
             getOrder(scope) {
                 const carNumber = scope.row.carNumber;
