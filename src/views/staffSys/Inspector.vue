@@ -23,7 +23,7 @@
                         </el-form-item>
                         <el-button type="primary" icon="el-icon-search" plain @click="findPage">查询</el-button>
                         <el-button type="primary" icon="el-icon-plus" plain @click="showDialog()">添加</el-button>
-                        <el-button @click="replacement()" type="info"  plain icon="el-icon-refresh">重置</el-button>
+                        <el-button @click="replacement()" type="info" plain icon="el-icon-refresh">重置</el-button>
                     </el-form>
 
                 </el-row>
@@ -53,9 +53,15 @@
                             width="120">
                     </el-table-column>
                     <el-table-column
-                            prop="roadName"
+                            prop="inspectorRoadVO"
                             label="管理路段"
                             width="120">
+                        <template slot-scope="scope">
+                           <span v-for="(road, index) in scope.row.inspectorRoadVO" :key="index">
+                                {{ road.roadName }}
+                               <span v-if="index !== scope.row.inspectorRoadVO.length - 1">,</span>
+                            </span>
+                        </template>
                     </el-table-column>
                     <el-table-column
                             prop="timePeriod"
@@ -63,7 +69,7 @@
                             width="120">
                     </el-table-column>
                     <el-table-column
-                            prop="order"
+                            prop="orderPercentage"
                             label="订单完成率"
                             width="120">
                     </el-table-column>
@@ -75,7 +81,7 @@
                         <template slot-scope="scope">
                             <el-tag
                                     :type="scope.row.state === 1 ? 'success' : 'primary'"
-                                    disable-transitions>{{scope.row.state == 1 ? "正常" : "异常"}}
+                                    disable-transitions>{{scope.row.state == 1 ? "正常" : "禁用"}}
                             </el-tag>
                         </template>
                     </el-table-column>
@@ -102,7 +108,7 @@
                                 </el-button>
                                 <el-button
                                         plain :type="scope.row.state === 1 ? 'danger' : 'success'"
-                                        @click="removeRoleById(scope.row)">{{scope.row.state == 1 ?  "禁用" : "恢复" }}
+                                        @click="removeRoleById(scope.row)">{{scope.row.state == 1 ? "禁用" : "恢复" }}
                                 </el-button>
                             </el-button-group>
                         </template>
@@ -124,50 +130,57 @@
         </el-row>
 
         <!-- 添加和修改的对话框 -->
-        <el-dialog title="车辆类型管理" :visible.sync="dialogFormVisible" width="500px">
+        <el-dialog title="巡检员管理" :visible.sync="dialogFormVisible" width="500px">
             <!--添加表单-->
-            <el-form label-width="120px" :model="form" :rules="rules" ref="ruleForm" :disabled="disabled">
+            <el-form label-width="120px" :model="form">
 
-                <el-form-item label="车牌号" :label-width="formLabelWidth" prop="carNumber">
-                    <el-input v-model="form.carNumber" placeholder="请输入车牌号" autocomplete="off"
-                              style="width: 300px;"></el-input>
+                <el-form-item label="巡检员名称" :label-width="formLabelWidth" prop="name">
+                    <el-input v-model="form.name" autocomplete="off" style="width: 300px;"></el-input>
                 </el-form-item>
-
-
-
-                <el-form-item label="电机号" :label-width="formLabelWidth" prop="motorNumber">
-                    <el-input v-model="form.motorNumber" placeholder="请输入电机号" autocomplete="off"
-                              style="width: 300px;"></el-input>
+                <el-form-item label="手机号" :label-width="formLabelWidth" prop="phone">
+                    <el-input v-model="form.phone" autocomplete="off" style="width: 300px;"></el-input>
                 </el-form-item>
-
-                <el-form-item label="入住时间" :label-width="formLabelWidth" prop="dateRegistration">
-                    <el-date-picker
-                            v-model="form.dateRegistration" format="yyyy-MM-dd" value-format="yyyy-MM-dd"
-                            type="date"
-                            placeholder="年-月-日" style="width: 300px;">
-                    </el-date-picker>
+                <el-form-item label="登录密码" :label-width="formLabelWidth" prop="phone">
+                    <el-input v-model="form.password" autocomplete="off" style="width: 300px;"></el-input>
                 </el-form-item>
-
+                <el-form-item label="管辖区域" :label-width="formLabelWidth" prop="inspectorRoadVO">
+                    <template v-for="road in form.inspectorRoadVO">
+                        <el-tag :key="road.tag" closable @close="handleClose(road.tag)">
+                            {{ road.roadName }}
+                        </el-tag>
+                    </template>
+                    <el-autocomplete
+                            class="input-new-tag"
+                            v-if="inputVisible"
+                            v-model="roadName"
+                            ref="saveRoadName"
+                            :suggestions="roads"
+                            :fetch-suggestions="querySearchAsync"
+                            :value-key="'name'"
+                            @keyup.enter.native="handleInputConfirm">
+                    </el-autocomplete>
+                    <el-button
+                            v-if="roadNames.length < 2"
+                            size="small"
+                            @click="showInput">+
+                    </el-button>
+                </el-form-item>
                 <el-form-item label="状态" :label-width="formLabelWidth" prop="state">
-                    <el-select v-model="form.state" placeholder="请选择车辆类型" style="width: 300px;">
-                        <el-option v-for="car in cars" :label="car.state == 1 ? '闲置' : '租赁'"
-                                   :value="car.state"></el-option>
-                    </el-select>
+                    <el-switch
+                            style=""
+                            v-model="form.state"
+                            active-color="#13ce66"
+                            inactive-color="#ff4949"
+                            active-text="正常"
+                            inactive-text="禁用"
+                            :active-value=1
+                            :inactive-value=0>
+                    </el-switch>
                 </el-form-item>
 
-                <el-form-item label="用途" :label-width="formLabelWidth" prop="carUse">
-                    <el-select v-model="form.carUse" placeholder="请选择车辆类型" style="width: 300px;">
-                        <el-option v-for="car in carUses" :label="car.carUse"
-                                   :value="car.carUse"></el-option>
-                    </el-select>
-                </el-form-item>
 
-
-                <el-form-item label="备注">
-                    <el-input type="textarea" v-model="form.remarks" placeholder="请输入备注信息"></el-input>
-                </el-form-item>
             </el-form>
-            <div slot="footer" class="dialog-footer" style="text-align: center" >
+            <div slot="footer" class="dialog-footer" style="text-align: center">
                 <el-button type="primary" @click="saveOrUpdate()">确 定</el-button>
                 <el-button type="danger" @click="resetForm()">返回</el-button>
             </div>
@@ -177,13 +190,15 @@
 <script>
     import inspector from '@/api/staffSys/inspector'
     import user from "@/api/user";
+    import road from "@/api/road/road";
 
     export default {
         data() {
             return {
-                //表单验证的规则
-                ruleForm: {},
-                rules: {},
+                roadName: '',
+                roads: [],
+                roadNames: [],
+                inputVisible: false,
                 //提交的表单
                 form: {},
                 //添加的显示
@@ -194,11 +209,6 @@
                 param: {},
                 //显示的属性
                 tableData: {},
-                //显示车辆类型
-                cars: [],
-                //查询所有的车辆类型
-                carTypes: [],
-                carUses: [],
                 //复选框
                 multipleSelection: [],
                 pageNum: 1,
@@ -206,6 +216,44 @@
             }
         },
         methods: {
+            querySearchAsync(roadName, cb) {
+                clearTimeout(this.timeout);
+                this.timeout = setTimeout(() => {
+                    this.findRoadAll(roadName);
+                    cb(this.roads);
+                }, 500); // 调整延迟时间
+            },
+            //添加路段
+            showInput() {
+                this.inputVisible = true;
+                this.$nextTick(() => {
+                    this.$refs.saveRoadName.$refs.reference.$refs.input.focus();
+                });
+            },
+            //添加路段
+            handleInputConfirm() {
+                // 将选中的路段添加到 inspectorRoadVO 数组中
+                debugger
+                //const selectedRoad = this.roads.find(r => {r.name == this.roadName});
+                for (const r of this.roads) {
+                    if(r.name = this.roadName) {
+                        alert(this.form.inspectorRoadVO);
+                        this.form.inspectorRoadVO.push(r);
+                    }
+                }
+                console.log("selectedRoad:",selectedRoad);
+                if (selectedRoad) {
+                    this.form.inspectorRoadVO.push(selectedRoad);
+                }
+                // 清空输入框和搜索结果
+                this.roadName = '';
+                this.roads = [];
+                this.inputVisible = false;
+            },
+            //删除管理路段
+            handleClose(tag) {
+                this.roadNames.splice(this.roadNames.indexOf(tag), 1);
+            },
             //禁用
             removeRoleById(row) {
                 this.$confirm('是否真的禁用该用户?', '提示', {
@@ -213,7 +261,7 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    user.removeRoleById(row).then(res=>{
+                    user.removeRoleById(row).then(res => {
                         console.log(res)
                         if (res.data == 0) {
                             this.$message.error("禁用成功");
@@ -226,7 +274,6 @@
                     })
                 });
             },
-
             //重置
             replacement() {
                 this.pageNum = 1;
@@ -252,7 +299,6 @@
             handleSelectionChange(val) {
                 this.multipleSelection = val;
             },
-
             //删除
             handleDelete(index, row) {
                 this.$confirm(`此操作将删除${row.typeName}, 是否继续?`, '提示', {
@@ -274,24 +320,25 @@
                     });
                 })
             },
-
             //查看显示的对话框
             handleView(index, row) {
                 this.dialogFormVisible = true;
                 this.form = row;
-                this.disabled = true;
             },
-
             //显示添加的对话框
             showDialog() {
+                this.form = {
+                    state: 1,
+                    inspectorRoadVO:[]
+                }
                 this.dialogFormVisible = true;
             },
             //编辑
             handleEdit(index, row) {
                 this.dialogFormVisible = true;
-                let obj = {};
-                Object.assign(obj, row);
-                this.form = obj;
+                let str = JSON.stringify(row);
+                this.form = JSON.parse(str);
+                this.roadNames = this.form.inspectorRoadVO
             },
             //取消显示的对话框
             resetForm() {
@@ -299,7 +346,13 @@
             },
             //确定按钮
             saveOrUpdate() {
-
+            },
+            findRoadAll(roadName) {
+                if(roadName) {
+                    road.findAllByRoadName(roadName).then(res => {
+                        this.roads = res.data
+                    })
+                }
             },
         },
         created() {
