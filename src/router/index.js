@@ -94,7 +94,16 @@ const routes = [
                 name: 'Information',
                 component: () => import('@/views/sys/Information'),
             },
-
+            {
+                path: '/userFeedback',
+                name: 'UserFeedback',
+                component: () => import('@/views/feedback/UserFeedback'),
+            },
+            {
+                path: '/userFeedbackDetails',
+                name: 'UserFeedbackDetails',
+                component: () => import('@/views/feedback/UserFeedbackDetails'),
+            }
         ]
     },
 

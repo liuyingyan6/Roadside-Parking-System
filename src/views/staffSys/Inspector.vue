@@ -21,20 +21,11 @@
                         <el-form-item label="管理路段">
                             <el-input v-model="param.roadName" placeholder="管理路段"></el-input>
                         </el-form-item>
-                        <el-button type="primary" icon="el-icon-search" @click="findPage">查询</el-button>
-                        <el-button @click="replacement()" type="info" icon="el-icon-refresh">重置</el-button>
+                        <el-button type="primary" icon="el-icon-search" plain @click="findPage">查询</el-button>
+                        <el-button type="primary" icon="el-icon-plus" plain @click="showDialog()">添加</el-button>
+                        <el-button @click="replacement()" type="info"  plain icon="el-icon-refresh">重置</el-button>
                     </el-form>
-                    <div>
-                        <el-upload style="display: inline;margin-right: 10px"
-                                   action="/car/importExcel"
-                                   :show-file-list="false"
-                                   :on-success="handleUploadSuccess"
-                                   accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
-                            <el-button type="primary" plain icon="el-icon-upload">批量导入</el-button>
-                        </el-upload>
-                        <el-button type="primary" plain @click="showDialog()">添加</el-button>
-                        <el-button type="primary" plain icon="el-icon-s-flag" @click="exportExcel">批量导出</el-button>
-                    </div>
+
                 </el-row>
 
                 <!-- 表格 data：要绑定的数据  handleSelectionChange 多选的方法 -->
@@ -67,7 +58,7 @@
                             width="120">
                     </el-table-column>
                     <el-table-column
-                            prop="dutyTime"
+                            prop="timePeriod"
                             label="执勤时间"
                             width="120">
                     </el-table-column>
@@ -109,6 +100,10 @@
                                         type="danger" icon="el-icon-circle-close" plain
                                         @click="handleDelete(scope.$index, scope.row)">删除
                                 </el-button>
+                                <el-button
+                                        plain :type="scope.row.state === 1 ? 'danger' : 'success'"
+                                        @click="removeRoleById(scope.row)">{{scope.row.state == 1 ?  "禁用" : "恢复" }}
+                                </el-button>
                             </el-button-group>
                         </template>
                     </el-table-column>
@@ -138,17 +133,7 @@
                               style="width: 300px;"></el-input>
                 </el-form-item>
 
-                <el-form-item label="车辆类型" :label-width="formLabelWidth" prop="carTypeId">
-                    <el-select v-model="form.carTypeId" placeholder="请选择车辆类型" style="width: 300px;">
-                        <el-option v-for="carType in carTypes" :label="carType.typeName"
-                                   :value="carType.id"></el-option>
-                    </el-select>
-                </el-form-item>
 
-                <el-form-item label="车架号" :label-width="formLabelWidth" prop="frameNumber">
-                    <el-input v-model="form.frameNumber" placeholder="请输入车架号" autocomplete="off"
-                              style="width: 300px;"></el-input>
-                </el-form-item>
 
                 <el-form-item label="电机号" :label-width="formLabelWidth" prop="motorNumber">
                     <el-input v-model="form.motorNumber" placeholder="请输入电机号" autocomplete="off"
@@ -182,7 +167,7 @@
                     <el-input type="textarea" v-model="form.remarks" placeholder="请输入备注信息"></el-input>
                 </el-form-item>
             </el-form>
-            <div slot="footer" class="dialog-footer" style="text-align: center" v-if="!disabled">
+            <div slot="footer" class="dialog-footer" style="text-align: center" >
                 <el-button type="primary" @click="saveOrUpdate()">确 定</el-button>
                 <el-button type="danger" @click="resetForm()">返回</el-button>
             </div>
@@ -190,7 +175,8 @@
     </div>
 </template>
 <script>
-    import inspector from '@/api/inspector'
+    import inspector from '@/api/staffSys/inspector'
+    import user from "@/api/user";
 
     export default {
         data() {
@@ -202,8 +188,6 @@
                 form: {},
                 //添加的显示
                 dialogFormVisible: false,
-                //查看禁用
-                disabled: false,
                 //添加的宽度
                 formLabelWidth: '120px',
                 //分页查询提交的参数
@@ -222,7 +206,26 @@
             }
         },
         methods: {
+            //禁用
+            removeRoleById(row) {
+                this.$confirm('是否真的禁用该用户?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    user.removeRoleById(row).then(res=>{
+                        console.log(res)
+                        if (res.data == 0) {
+                            this.$message.error("禁用成功");
 
+                        } else {
+                            this.$message.success("恢复成功");
+
+                        }
+                        this.findPage();// 刷新表单数据
+                    })
+                });
+            },
 
             //重置
             replacement() {
@@ -272,23 +275,6 @@
                 })
             },
 
-
-            //上传成功以后的回调函数, result就是服务器返回的对象
-            handleUploadSuccess(result) {
-                if (result.code === 1) {
-                    this.$message.success(result.message);
-                } else {
-                    this.$message.error("导入Excel失败");
-                }
-                this.findPage();
-            },
-            //导出按钮
-            exportExcel() {
-                //后台直接访问一个地址，进行下载
-                location.href = "/car/exportExcel";
-            },
-
-
             //查看显示的对话框
             handleView(index, row) {
                 this.dialogFormVisible = true;
@@ -299,90 +285,22 @@
             //显示添加的对话框
             showDialog() {
                 this.dialogFormVisible = true;
-                this.disabled = false;
             },
             //编辑
             handleEdit(index, row) {
                 this.dialogFormVisible = true;
-                this.disabled = false;
                 let obj = {};
                 Object.assign(obj, row);
                 this.form = obj;
             },
             //取消显示的对话框
             resetForm() {
-                this.$refs.ruleForm.resetFields();
                 this.dialogFormVisible = false;
             },
             //确定按钮
             saveOrUpdate() {
-                if (this.form.id) {
-                    axios.put("/car", this.form).then(
-                        resp => {
-                            let result = resp.data;
-                            if (result.code === 1) {
-                                //显示信息框
-                                this.$message.success(result.message);
-                            } else {
-                                this.$message.error(result.message);
-                            }
-                        }).finally(() => {
-                        //隐藏对话框
-                        this.dialogFormVisible = false;
-                        //清空文本框的内容
-                        this.form = {};
-                        this.findPage();
-                    })
-                } else {
-                    //没有就是添加
-                    axios.post("/car", this.form).then(resp => {
-                        //获取响应结果对象
-                        let result = resp.data;
-                        if (result.code === 1) {
-                            this.$message.success(result.message);
-                        } else {
-                            this.$message.error(result.message);
-                        }
-                    }).finally(() => {
-                        this.dialogFormVisible = false;
-                        this.form = {};
-                        this.findPage();
-                    });
-                }
-            },
 
-
-            //加载所有车辆状态
-            findAll() {
-                axios.get("/car").then(resp => {
-                    let result = resp.data;
-                    if (result.code === 1) {
-                        this.cars = result.data;
-                    }
-                });
             },
-
-            //查询所有车辆用途
-            findCarUseAll() {
-                axios.get("/car/carUse").then(resp => {
-                    let result = resp.data;
-                    if (result.code === 1) {
-                        this.carUses = result.data;
-                    }
-                });
-            },
-            //加载所有车辆类型
-            findAllCarType() {
-                axios.get("/carType").then(resp => {
-                    let result = resp.data;
-                    if (result.code === 1) {
-                        this.carTypes = result.data;
-                    }
-                });
-            },
-            reset() {
-                // this.
-            }
         },
         created() {
             this.findPage()

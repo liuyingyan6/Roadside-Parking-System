@@ -21,12 +21,6 @@
                             <el-input v-model="param.phone" placeholder="手机号码"></el-input>
                         </el-form-item>
 
-<!--                        <el-form-item>-->
-<!--                            <el-input v-model="param.vx" placeholder="微信绑定" >-->
-<!--                            </el-input>-->
-<!--                        </el-form-item>-->
-
-
                         <el-select v-model="param.vx" placeholder="微信绑定">
                             <el-option label="已绑定" value="1"></el-option>
                             <el-option label="未绑定" value="0"></el-option>

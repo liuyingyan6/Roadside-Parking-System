@@ -40,7 +40,7 @@
                             prop="createTime"
                             label="创建时间"
                             width="200"
-                            format="yyyy-MM-dd" value-format="yyyy-MM-dd">
+                            format="yyyy-MM-dd " value-format="yyyy-MM-dd">
                         <template slot-scope="scope">{{ scope.row.createTime }}</template>
                     </el-table-column>
                     <el-table-column label="操作" width="180px">
