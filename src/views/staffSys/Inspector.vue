@@ -145,7 +145,7 @@
                 </el-form-item>
                 <el-form-item label="管辖区域" :label-width="formLabelWidth" prop="inspectorRoadVO">
                     <template v-for="road in form.inspectorRoadVO">
-                        <el-tag :key="road.tag" closable @close="handleClose(road.tag)">
+                        <el-tag :key="road.id" closable @close="handleClose(road.id)">
                             {{ road.roadName }}
                         </el-tag>
                     </template>
@@ -227,7 +227,7 @@
             showInput() {
                 this.inputVisible = true;
                 this.$nextTick(() => {
-                    this.$refs.saveRoadName.$refs.reference.$refs.input.focus();
+                    this.$refs.saveRoadName.$refs.input.focus();
                 });
             },
             //添加路段
@@ -237,22 +237,16 @@
                 //const selectedRoad = this.roads.find(r => {r.name == this.roadName});
                 for (const r of this.roads) {
                     if(r.name = this.roadName) {
-                        alert(this.form.inspectorRoadVO);
                         this.form.inspectorRoadVO.push(r);
+                        console.log("inspectorRoadVo:",this.form.inspectorRoadVO)
                     }
                 }
-                console.log("selectedRoad:",selectedRoad);
-                if (selectedRoad) {
-                    this.form.inspectorRoadVO.push(selectedRoad);
-                }
                 // 清空输入框和搜索结果
-                this.roadName = '';
-                this.roads = [];
                 this.inputVisible = false;
             },
             //删除管理路段
             handleClose(tag) {
-                this.roadNames.splice(this.roadNames.indexOf(tag), 1);
+                this.form.inspectorRoadVO.splice(this.form.inspectorRoadVO.indexOf(tag), 1);
             },
             //禁用
             removeRoleById(row) {
