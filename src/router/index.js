@@ -15,7 +15,6 @@ import OrderDetails from "@/views/secondaryMenu/OrderDetails.vue";
 import Cashflow from "@/views/finance/Cashflow";
 import Information from "@/views/sys/Information";
 import UserDetails from "@/views/secondaryMenu/UserDetails";
-import pdaLog from "@/views/device/PdaLog.vue";
 import pda from "@/views/device/pda.vue";
 import CarOrder from "@/views/permission/CarOrder";
 import Road from "@/views/road/Road";
@@ -24,6 +23,9 @@ import UserFeedback from "@/views/feedback/UserFeedback";
 import InspectorFeedback from "@/views/feedback/InspectorFeedback";
 import InspectorFeedbackDetail from "@/views/feedback/InspectorFeedbackDetail";
 import Operator from "@/views/employee/Operator";
+import PdaLog from "@/views/device/PdaLog.vue";
+import Pda from "@/views/device/Pda.vue";
+import Revenue from "@/views/statistics/Revenue.vue";
 
 Vue.use(VueRouter)
 
@@ -93,13 +95,18 @@ const routes = [
             },
             {
                 path: '/pda',
-                name: "pda",
-                component: pda
+                name: "Pda",
+                component: Pda
             },
             {
                 path: '/pdaLog/:id',
-                name: "pdaLog",
-                component: pdaLog
+                name: "PdaLog",
+                component: PdaLog
+            },
+            {
+                path: '/revenue',
+                name: "Revenue",
+                component: Revenue
             },
             {
                 path: '/order',
@@ -161,6 +168,7 @@ const routes = [
                 name: "Operator",
                 component: Operator
             }
+
         ]
     }
 ]
