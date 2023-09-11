@@ -15,7 +15,6 @@ import OrderDetails from "@/views/secondaryMenu/OrderDetails.vue";
 import Cashflow from "@/views/finance/Cashflow";
 import Information from "@/views/sys/Information";
 import UserDetails from "@/views/secondaryMenu/UserDetails";
-import pda from "@/views/device/pda.vue";
 import CarOrder from "@/views/permission/CarOrder";
 import Road from "@/views/road/Road";
 import Parking from "@/views/road/Parking";
