@@ -21,11 +21,6 @@
                             <el-input v-model="param.phone" placeholder="手机号码"></el-input>
                         </el-form-item>
 
-<!--                        <el-form-item>-->
-<!--                            <el-input v-model="param.vx" placeholder="微信绑定" >-->
-<!--                            </el-input>-->
-<!--                        </el-form-item>-->
-
 
                         <el-select v-model="param.vx" placeholder="微信绑定">
                             <el-option label="已绑定" value="1"></el-option>
@@ -52,53 +47,18 @@
                 </el-row>
 
                 <!-- 表格 data：要绑定的数据  handleSelectionChange 多选的方法 -->
-                <el-table
-                        ref="multipleTable"
-                        :data="tableData"
-                        tooltip-effect="dark"
-                        style="width: 100%;text-align: center;font-size: 18px"
-                        @selection-change="handleSelectionChange">
-
+                <el-table :data="tableData" border stripe @selection-change="handleSelectionChange">
                     <!-- 复选框 -->
-                    <el-table-column
-                            type="selection"
-                            width="55">
-                    </el-table-column>
-
-                    <el-table-column
-                            prop="userName"
-                            label="昵称"
-                            width="120">
-                    </el-table-column>
-
-                    <el-table-column
-                            prop="phone"
-                            label="手机号"
-                            width="120">
-                    </el-table-column>
-
-                    <el-table-column
-                            prop="carNum"
-                            label="绑定车辆数"
-                            width="120">
-                    </el-table-column>
-
-                    <el-table-column
-                            prop="orderNum"
-                            label="订单数量"
-                            width="120">
-                    </el-table-column>
-
-                    <el-table-column
-                            prop="notOrderNum"
-                            label="未缴费订单"
-                            width="120">
-                    </el-table-column>
-
+                    <el-table-column type="selection" width="55"></el-table-column>
+                    <el-table-column label="昵称" prop="userName" width="100"> </el-table-column>
+                    <el-table-column label="手机号 " prop="phone" width="150"></el-table-column>
+                    <el-table-column label="绑定车辆数" prop="carNum" width="100"></el-table-column>
+                    <el-table-column label="订单数量" prop="orderNum" width="100"></el-table-column>
+                    <el-table-column label="未缴费订单" prop="notOrderNum" width="100"></el-table-column>
                     <el-table-column
                             prop="vx"
                             label="微信绑定"
-                            width="100">
+                            width="120">
                         <template slot-scope="scope">
                             <el-tag
                                     :type="scope.row.vx === 1 ? 'success' : 'primary'"
@@ -110,7 +70,7 @@
                     <el-table-column
                             prop="state"
                             label="状态"
-                            width="100">
+                            width="120">
                         <template slot-scope="scope">
                             <el-tag
                                     :type="scope.row.state === 1 ? 'success' : 'primary'"
@@ -119,13 +79,10 @@
                         </template>
                     </el-table-column>
 
-                    <el-table-column
-                            prop="createTime"
-                            label="注册时间"
-                            width="200">
-                    </el-table-column>
 
-                    <el-table-column label="操作">
+                    <el-table-column label="注册时间" prop="createTime" width="180"></el-table-column>
+
+                    <el-table-column label="操作" width="380">
                         <template slot-scope="scope">
                             <el-button-group>
                                 <el-button
@@ -226,7 +183,7 @@
 
             //查看详情跳转
             handleView(index, row) {
-
+                this.$router.push({path:`/userDetails/${row.id}`});
             },
 
             //分页

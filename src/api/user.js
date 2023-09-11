@@ -15,5 +15,5 @@ export default {
             method: 'put',
             data: user
         })
-    }
+    },
 }
