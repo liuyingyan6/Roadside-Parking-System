@@ -11,7 +11,7 @@
         <el-row>
           <el-form :inline="true" :model="param">
             <el-form-item label="订单编号">
-              <el-input v-model="param.carNumber" placeholder="请输入订单编号"></el-input>
+              <el-input v-model="param.orderNumber" placeholder="请输入订单编号"></el-input>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" icon="el-icon-search" @click="findPage">查询</el-button>
@@ -191,11 +191,11 @@ export default {
     return {
 
       stateTagMap: {
-        // 0: {type: 'success', text: '进行中'},
-        // 1: {type: 'info', text: '待缴费'},
-        // 2: {type: 'warning', text: '已缴费'},
-        // 3: {type: 'danger', text: '已完成'},
-        // 4: {type: 'primary', text: '已退款'}
+        0: {type: 'success', text: '进行中'},
+        1: {type: 'info', text: '待缴费'},
+        2: {type: 'warning', text: '已缴费'},
+        3: {type: 'danger', text: '已完成'},
+        4: {type: 'primary', text: '已退款'}
       },
       param: {
         carNumber: ""
@@ -213,11 +213,11 @@ export default {
       formLabelWidth: '120px',
 
       roleList: [
-        // {status: 0},
-        // {status: 1},
-        // {status: 2},
-        // {status: 3},
-        // {status: 4}
+        {status: 0},
+        {status: 1},
+        {status: 2},
+        {status: 3},
+        {status: 4}
       ], // 表单数据
       //分页查询提交的参数
 
@@ -370,7 +370,7 @@ export default {
         params: {
           pageNum: this.pageNum,
           pageSize: this.pageSize,
-          carNumber: this.param.carNumber
+          orderNumber: this.param.orderNumber
         }
       }).then(res => {
         console.log("{}", res)

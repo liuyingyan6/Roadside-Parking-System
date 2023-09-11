@@ -210,7 +210,7 @@
           <el-col :span="12">
             <div class="grid-content bg-purple-light">
               <span class="texts" style="color: dimgray ">合计:</span>
-              &nbsp;&nbsp; <span class="text1 bg-purple " style="color: tomato">待核算</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp; <span class="text1 bg-purple" :style="statusTextColor">{{ statusText }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </div>
           </el-col>
         </el-row>
@@ -285,7 +285,9 @@ const axios = require('axios');
 export default {
 
   data() {
+
     return {
+
       orderData: {
 
         status: '',
@@ -446,7 +448,8 @@ export default {
         Billing: '',
         Charges: '',
         CapAmount: ''
-      }]
+      }],
+
 
     };
   },
@@ -485,6 +488,7 @@ export default {
     // Access the 'orderData' query parameter and parse it if needed
     const orderData = JSON.parse(this.$route.query.orderData);
 
+
     // Now, you can use 'id' and 'orderData' in this component
 
     console.log('id:', id);
@@ -492,6 +496,38 @@ export default {
   }, mounted() {
     // 使用JSON.parse将路由参数解析为JavaScript对象，并赋值给orderData属性
     this.orderData = JSON.parse(this.$route.query.orderData);
+  },
+  computed:{
+    statusText() {
+      console.log("Entering statusText()");
+      const status = JSON.parse(this.$route.query.orderData).status;
+      console.log("status:", status);
+      switch (status) {
+        case 1:
+          console.log("Returning '待核算'");
+          return '待核算';
+        // case 2:
+        //   console.log("Returning '已完成'");
+        //   return '已完成';
+        default:
+          console.log("Returning '其他状态'");
+          return this.orderData.orderAmount;
+      }
+    },
+    statusTextColor() {
+      // You can customize text colors based on status values
+      const status = JSON.parse(this.$route.query.orderData).status;
+      console.log("status:", status);
+      switch (status) {
+
+        case 1:
+          return { color: 'tomato' };
+        // case '已完成':
+        //   return { color: 'green' };
+        default:
+          return { color: 'gray' };
+      }
+    },
   }
 };
 </script>
