@@ -20,6 +20,7 @@ import pda from "@/views/device/pda.vue";
 import CarOrder from "@/views/permission/CarOrder";
 import Road from "@/views/road/Road";
 import Parking from "@/views/road/Parking";
+import roadStatistics from "@/views/statistics/roadStatistics";
 
 Vue.use(VueRouter)
 
@@ -136,7 +137,12 @@ const routes = [
                 path:'/parking',
                 name: "Parking",
                 component: Parking
-            }
+            },
+            {
+                path:'/roadStatistics',
+                name: "roadStatistics",
+                component: roadStatistics
+            },
         ]
     }
 ]

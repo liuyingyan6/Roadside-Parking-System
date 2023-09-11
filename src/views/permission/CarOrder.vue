@@ -71,6 +71,7 @@
                         <template slot-scope="scope">
                             <el-tag v-if="scope.row.payType==1" type="primary">支付宝付款</el-tag>
                             <el-tag v-if="scope.row.payType==0" type="success">微信支付</el-tag>
+                            <el-tag v-if="scope.row.payType==2" type="success">现金支付</el-tag>
                             <el-tag v-if="scope.row.payType==null" type="danger">未知</el-tag>
                         </template>
                     </el-table-column>
@@ -81,7 +82,7 @@
                         @size-change="handleSizeChange"
                         @current-change="handleCurrentChange"
                         :current-page="pageNumber"
-                        :page-sizes="[3, 6, 9, 12]"
+                        :page-sizes="[5, 6, 9, 12]"
                         :page-size="pageSize"
                         layout="total, sizes, prev, pager, next, jumper"
                         :total="total">
@@ -98,7 +99,7 @@
         data() {
             return {
                 pageNumber: 1,//自定义默认显示第1页
-                pageSize: 5, //自定义默认每页显示3条数据
+                pageSize: 5,
                 total: 0,
                 key:'',
                 CarOrderList: [],//表单data的集合
@@ -163,6 +164,7 @@
                     console.log("{}",statusValue)
                     //每次都将遍历AllList的值，将不会受到变化的影响，将符合的数据放进filteredOrders
                     const filteredOrders = this.AllList.filter(order =>order.status === statusValue);
+                    this.total = filteredOrders.length;
                     console.log("{}",filteredOrders);
                     //将filteredOrders传输给表单data
                     this.CarOrderList=filteredOrders;
