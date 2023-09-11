@@ -298,7 +298,7 @@
                 <el-breadcrumb separator-class="el-icon-arrow-right">
                     <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
                     <el-breadcrumb-item>统计管理</el-breadcrumb-item>
-                    <el-breadcrumb-item>营收管理</el-breadcrumb-item>
+                    <el-breadcrumb-item>营收统计</el-breadcrumb-item>
                 </el-breadcrumb>
             </el-card>
         </el-row> <!--面包屑-->

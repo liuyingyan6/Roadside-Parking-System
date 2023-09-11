@@ -25,6 +25,7 @@ import Operator from "@/views/employee/Operator";
 import PdaLog from "@/views/device/PdaLog.vue";
 import Pda from "@/views/device/Pda.vue";
 import Revenue from "@/views/statistics/Revenue.vue";
+import Payment from "@/views/statistics/Payment";
 
 Vue.use(VueRouter)
 
@@ -166,8 +167,12 @@ const routes = [
                 path:'/operator',
                 name: "Operator",
                 component: Operator
+            },
+            {
+                path:'/payment',
+                name: "Payment",
+                component: Payment
             }
-
         ]
     }
 ]

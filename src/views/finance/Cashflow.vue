@@ -125,6 +125,9 @@
                         pageSize: this.pageSize
                     }
                 }).then(res => {
+                    console.log(res.data.totalAmount)
+                    console.log(res.data.refundAmount)
+                    console.log(res)
                     this.cashflowList = res.data.orderList
                     this.totalAmount = res.data.totalAmount
                     this.refundAmount = res.data.refundAmount
