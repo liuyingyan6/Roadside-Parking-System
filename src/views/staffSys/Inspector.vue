@@ -143,28 +143,6 @@
                 <el-form-item label="登录密码" :label-width="formLabelWidth" prop="phone">
                     <el-input v-model="form.password" autocomplete="off" style="width: 300px;"></el-input>
                 </el-form-item>
-                <el-form-item label="管辖区域" :label-width="formLabelWidth" prop="inspectorRoadVO">
-                    <template v-for="road in form.inspectorRoadVO">
-                        <el-tag :key="road.id" closable @close="handleClose(road.id)">
-                            {{ road.roadName }}
-                        </el-tag>
-                    </template>
-                    <el-autocomplete
-                            class="input-new-tag"
-                            v-if="inputVisible"
-                            v-model="roadName"
-                            ref="saveRoadName"
-                            :suggestions="roads"
-                            :fetch-suggestions="querySearchAsync"
-                            :value-key="'name'"
-                            @keyup.enter.native="handleInputConfirm">
-                    </el-autocomplete>
-                    <el-button
-                            v-if="roadNames.length < 2"
-                            size="small"
-                            @click="showInput">+
-                    </el-button>
-                </el-form-item>
                 <el-form-item label="状态" :label-width="formLabelWidth" prop="state">
                     <el-switch
                             style=""
@@ -177,8 +155,40 @@
                             :inactive-value=0>
                     </el-switch>
                 </el-form-item>
-
-
+                <el-form-item label="管辖区域" :label-width="formLabelWidth" prop="inspectorRoadVO">
+                    <template v-for="road in form.inspectorRoadVO">
+                        <el-tag :key="road.id" closable @close="handleClose(road.id)">
+                            {{ road.roadName }}
+                        </el-tag>
+                    </template>
+                    <el-select
+                            class="input-new-tag"
+                            v-model="roadName"
+                            v-if="inputVisible"
+                            ref="saveRoadName"
+                            multiple
+                            filterable
+                            remote
+                            reserve-keyword
+                            placeholder="请输入关键词"
+                            :remote-method="remoteMethod"
+                            :loading="loading"
+                            collapse-tags
+                            hide-selected
+                            @keyup.enter.native="handleInputConfirm">
+                        <el-option
+                                v-for="r in roads"
+                                :label="r.roadName"
+                                :value="r.id"
+                                @click.native.stop="() =>selectOption(r)">
+                        </el-option>
+                    </el-select>
+                    <el-button
+                            v-if="roadNames.length < 2"
+                            size="small"
+                            @click="showInput">+
+                    </el-button>
+                </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer" style="text-align: center">
                 <el-button type="primary" @click="saveOrUpdate()">确 定</el-button>
@@ -195,6 +205,7 @@
     export default {
         data() {
             return {
+                loading: false,
                 roadName: '',
                 roads: [],
                 roadNames: [],
@@ -216,12 +227,70 @@
             }
         },
         methods: {
-            querySearchAsync(roadName, cb) {
-                clearTimeout(this.timeout);
-                this.timeout = setTimeout(() => {
-                    this.findRoadAll(roadName);
-                    cb(this.roads);
-                }, 500); // 调整延迟时间
+            //删除
+            handleDelete(index, row) {
+                this.$confirm(`此操作将删除${row.name}, 是否继续?`, '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    inspector.deleteById(row.id).then(res => {
+                        this.$message.success("删除成功");
+                        this.findPage();
+                    })
+                }).catch(() => {
+                    this.$message.info('已取消删除');
+                });
+            },
+            //查看显示的对话框
+            handleView(index, row) {
+
+            },
+            //编辑
+            handleEdit(index, row) {
+                this.dialogFormVisible = true;
+                let str = JSON.stringify(row);
+                this.form = JSON.parse(str);
+                this.roadNames = this.form.inspectorRoadVO
+            },
+            //显示添加的对话框
+            showDialog() {
+                this.form = {
+                    state: 1,
+                    inspectorRoadVO: []
+                }
+                this.dialogFormVisible = true;
+            },
+            //取消显示的对话框
+            resetForm() {
+                this.dialogFormVisible = false;
+            },
+            //确定按钮
+            saveOrUpdate() {
+                if (this.form.id) {
+                    inspector.updateInspector(this.form).then(res => {
+                        this.$message.success("修改成功");
+                        this.findPage()
+                    })
+                } else {
+                    inspector.saveInspector(this.form).then(res => {
+                        this.$message.success("添加成功");
+                        this.findPage()
+                    })
+                }
+                this.dialogFormVisible = false
+            },
+            remoteMethod(roadName) {
+                if (roadName !== '') {
+                    this.loading = true;
+                    this.findRoadAll(roadName)
+                    setTimeout(() => {
+                        this.loading = false;
+                        this.roads;
+                    }, 200);
+                } else {
+                    this.roads = [];
+                }
             },
             //添加路段
             showInput() {
@@ -233,16 +302,29 @@
             //添加路段
             handleInputConfirm() {
                 // 将选中的路段添加到 inspectorRoadVO 数组中
-                debugger
-                //const selectedRoad = this.roads.find(r => {r.name == this.roadName});
                 for (const r of this.roads) {
-                    if(r.name = this.roadName) {
+                    if (r.name = this.roadName) {
                         this.form.inspectorRoadVO.push(r);
-                        console.log("inspectorRoadVo:",this.form.inspectorRoadVO)
                     }
                 }
                 // 清空输入框和搜索结果
                 this.inputVisible = false;
+                this.roadName = '';
+                this.roads = [];
+                this.roadNames = this.form.inspectorRoadVO
+            },
+            selectOption(item) {
+                // 将选中的路段添加到 inspectorRoadVO 数组中
+                this.form.inspectorRoadVO.push(item);
+                // 清空选择器输入框和搜索结果
+                this.inputVisible = false;
+                this.roadName = '';
+                this.roads = [];
+                this.roadNames = this.form.inspectorRoadVO
+                this.$nextTick(() => {
+                    // 触发重新渲染
+                    this.$forceUpdate();
+                });
             },
             //删除管理路段
             handleClose(tag) {
@@ -250,22 +332,21 @@
             },
             //禁用
             removeRoleById(row) {
-                this.$confirm('是否真的禁用该用户?', '提示', {
+                this.$confirm(`是否真的禁用${row.name}巡检员?`, '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    user.removeRoleById(row).then(res => {
-                        console.log(res)
+                    inspector.removeRoleById(row).then(res => {
                         if (res.data == 0) {
                             this.$message.error("禁用成功");
-
                         } else {
                             this.$message.success("恢复成功");
-
                         }
                         this.findPage();// 刷新表单数据
                     })
+                }).catch(() => {
+                    this.$message.info('已取消禁用');
                 });
             },
             //重置
@@ -293,56 +374,9 @@
             handleSelectionChange(val) {
                 this.multipleSelection = val;
             },
-            //删除
-            handleDelete(index, row) {
-                this.$confirm(`此操作将删除${row.typeName}, 是否继续?`, '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    //调用后台服务器删除
-                    axios.delete(`/car/${row.id}`).then(resp => {
-                        let result = resp.data;
-                        if (result.code === 1) {
-                            this.$message.success(result.message);
-                        } else {
-                            this.$message.error(result.message);
-                        }
-                    }).finally(() => {
-                        //重新加载一次表格的数据
-                        this.findPage();
-                    });
-                })
-            },
-            //查看显示的对话框
-            handleView(index, row) {
-                this.dialogFormVisible = true;
-                this.form = row;
-            },
-            //显示添加的对话框
-            showDialog() {
-                this.form = {
-                    state: 1,
-                    inspectorRoadVO:[]
-                }
-                this.dialogFormVisible = true;
-            },
-            //编辑
-            handleEdit(index, row) {
-                this.dialogFormVisible = true;
-                let str = JSON.stringify(row);
-                this.form = JSON.parse(str);
-                this.roadNames = this.form.inspectorRoadVO
-            },
-            //取消显示的对话框
-            resetForm() {
-                this.dialogFormVisible = false;
-            },
-            //确定按钮
-            saveOrUpdate() {
-            },
+            //根据roadName查询road
             findRoadAll(roadName) {
-                if(roadName) {
+                if (roadName) {
                     road.findAllByRoadName(roadName).then(res => {
                         this.roads = res.data
                     })
