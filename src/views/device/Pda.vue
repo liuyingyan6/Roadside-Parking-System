@@ -57,7 +57,7 @@
               width="120">
           </el-table-column> <!-- pda名称 -->
           <el-table-column
-              prop="roadName"
+              prop="roadNames"
               label="所属路段"
               width="120">
           </el-table-column> <!-- 所属路段 -->
@@ -122,10 +122,10 @@
         <el-form-item label="pda名称" :label-width="formLabelWidth" prop="name">
           <el-input v-model="formData.name" autocomplete="off" style="width: 300px"></el-input>
         </el-form-item>
-        <el-form-item label="所属路段" :label-width="formLabelWidth" prop="roadId">
-          <el-select v-model="formData.roadId" style="width: 300px">
-            <el-option v-for="road in roads" :label="road.name"
-                       :value="road.id"></el-option>
+        <el-form-item label="巡检员" :label-width="formLabelWidth" prop="inspectorId">
+          <el-select v-model="formData.inspectorId" style="width: 300px">
+            <el-option v-for="inspector in inspectors" :label="inspector.name"
+                       :value="inspector.id"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="状态" :label-width="formLabelWidth" prop="status" value-key="value">
@@ -183,7 +183,7 @@ export default {
       formData: {},
       dialogFormVisible: false,
       formLabelWidth: '120px',
-      roads: [],
+      inspectors: [],
       //分页查询提交的参数
       pageNum: 1,
       pageSize: 5,
@@ -218,7 +218,7 @@ export default {
       xhr.send();
     }, //导出按钮
     showDialog() {
-      this.getRoads();
+      this.getInspectors();
       this.dialogFormVisible = true;
     }, //显示添加/修改的对话框
     resetForm() {
@@ -226,12 +226,10 @@ export default {
       this.dialogFormVisible = false;
     },// 取消显示的对话框
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
       this.pageSize = val;
       this.getPage();
     }, // 切换页大小
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
       this.pageNum = val;
       this.getPage();
     }, // 切换页数
@@ -246,7 +244,7 @@ export default {
         }
       })
           .then(resp => {
-            console.log(resp);
+            console.log(resp)
             this.tableData = resp.data.records;
             this.total = resp.data.total
           });
@@ -254,10 +252,10 @@ export default {
     toLogPage(id) {
       this.$router.push('/pdaLog/' + id);
     }, // 跳转到登录日志
-    getRoads() {
-      axios.get('/road/list')
+    getInspectors() {
+      axios.get('/inspector/list')
           .then(resp => {
-            this.roads = resp.data;
+            this.inspectors = resp.data;
           })
     },
     saveOrUpdate() {

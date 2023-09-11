@@ -15,6 +15,7 @@
       <el-table :data="logList" border stripe>
         <el-table-column label="编号" prop="id"></el-table-column>
         <el-table-column label="操作者" prop="userId"></el-table-column>
+        <el-table-column label="url" prop="url"></el-table-column>
         <el-table-column label="操作日期" prop="createTime"></el-table-column>
         <el-table-column label="IP" prop="ip"></el-table-column>
         <el-table-column label="操作记录" prop="record"></el-table-column>

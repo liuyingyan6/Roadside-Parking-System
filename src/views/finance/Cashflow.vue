@@ -8,8 +8,21 @@
             <el-breadcrumb-item>资金流水</el-breadcrumb-item>
         </el-breadcrumb>
 
+        <el-card>
+            <div class="amount-container">
+                <div class="amount-box">
+                    <span class="amount-title">总入账</span>
+                    <span class="amount-value">{{ totalAmount }}</span>
+                </div>
+                <div class="amount-box">
+                    <span class="amount-title">总出账</span>
+                    <span class="amount-value">{{ refundAmount }}</span>
+                </div>
+            </div>
+        </el-card>
 
         <el-card>
+
 
             <!--搜索框&添加按钮-->
             <el-row :gutter="20">
@@ -23,7 +36,7 @@
                             end-placeholder="结束日期"
                             align="right">
                     </el-date-picker>
-                    <el-button type="primary" @click="addDialogVisible=true">查询</el-button>
+                    <el-button type="primary" @click="reloadList()">查询</el-button>
                 </el-col>
                 <el-col :span="4">
                 </el-col>
@@ -45,7 +58,7 @@
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
                     :current-page="pageNum"
-                    :page-sizes="[5, 10 , 15, 20]"
+                    :page-sizes="[3, 5 , 15, 20]"
                     :page-size="pageSize"
                     layout="total, sizes, prev, pager, next, jumper"
                     :total="total"
@@ -56,6 +69,9 @@
     </div>
 </template>
 <script>
+    import axios from 'axios';
+    import moment from 'moment';
+    import echarts from 'echarts'
     export default {
         data() {
             return {
@@ -86,21 +102,69 @@
                         }
                     }]
                 },
-                choiceTime: [new Date(2000, 10, 10, 10, 10),
-                             new Date(2000, 10, 11, 10, 10)],
-                pageNum: 1,
-                pageSize: 5,
-                total: 0,
+                choiceTime: [new Date(2023, 8-1, 1, 9, 10),
+                             new Date(2023, 9-1, 9, 9, 10)],
                 cashflowList: [], // 表单数据
+                totalAmount: 0,
+                refundAmount: 0,
+                pageNum: 1,
+                pageSize: 3,
+                total: 0
 
             };
         },
         methods: {
+            reloadList() {
+                const startTime = moment(this.choiceTime[0]).format('YYYY-MM-DD HH:mm:ss');
+                const endTime = moment(this.choiceTime[1]).format('YYYY-MM-DD HH:mm:ss');
+                axios.get("/order/countOrder", {
+                    params: {
+                        startTime: startTime,
+                        endTime: endTime,
+                        pageNum: this.pageNum,
+                        pageSize: this.pageSize
+                    }
+                }).then(res => {
+                    this.cashflowList = res.data.orderList
+                    this.totalAmount = res.data.totalAmount
+                    this.refundAmount = res.data.refundAmount
+                    this.total = res.data.total
+                })
+            },
+            handleSizeChange(newSize) {
+                this.pageSize = newSize;
+                this.reloadList();
+            },
+            handleCurrentChange(newPage) {
+                this.pageNum = newPage;
+                this.reloadList();
+            }
         },
         created() {
-            this.searchRole();
+            this.reloadList();
         }
     };
 </script>
 <style lang="less" scoped>
+    .amount-container {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .amount-box {
+        background-color: #f0f0f0;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        flex: 1;
+        margin: 10px;
+    }
+
+    .amount-title {
+        font-weight: bold;
+    }
+
+    .amount-value {
+        font-size: 24px;
+    }
 </style>

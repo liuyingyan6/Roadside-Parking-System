@@ -34,7 +34,6 @@
 
         <!-- 表格 data：要绑定的数据  handleSelectionChange 多选的方法 -->
         <el-table
-            ref="multipleTable"
             :data="tableData"
             tooltip-effect="dark"
             style="width: 100%; text-align: center; font-size: 18px"
@@ -239,12 +238,10 @@ export default {
       this.dialogFormVisible = false;
     },// 取消显示的对话框
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
       this.pageSize = val;
       this.getPage();
     }, // 切换页大小
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
       this.pageNum = val;
       this.getPage();
     }, // 切换页数
@@ -258,6 +255,7 @@ export default {
         }
       })
           .then(resp => {
+            console.log(resp);
             this.tableData = resp.data.records;
             this.total = resp.data.total
           });
