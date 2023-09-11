@@ -92,6 +92,7 @@
             }
         },
         methods: {
+            // 重置
             reset(){
                 this.orderNumber='';
                 this.status='';
@@ -99,6 +100,7 @@
                 this.CarOrderList=this.AllList;
 
             },
+            // 查询
             find(){
                 const statusValue = this.status;
                 console.log("{}",statusValue)

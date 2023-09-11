@@ -23,6 +23,7 @@ import Parking from "@/views/road/Parking";
 import UserFeedback from "@/views/feedback/UserFeedback";
 import InspectorFeedback from "@/views/feedback/InspectorFeedback";
 import InspectorFeedbackDetail from "@/views/feedback/InspectorFeedbackDetail";
+import Operator from "@/views/employee/Operator";
 
 Vue.use(VueRouter)
 
@@ -154,6 +155,11 @@ const routes = [
                 path:'/inspectorFeedbackDetail',
                 name: "InspectorFeedbackDetail",
                 component: InspectorFeedbackDetail
+            },
+            {
+                path:'/operator',
+                name: "Operator",
+                component: Operator
             }
         ]
     }

@@ -44,15 +44,15 @@
         <!-- 表格 -->
         <el-table :data="roadList" border stripe>
           <!-- 复选框 -->
-          <el-table-column type="selection" width="55"></el-table-column>
-          <el-table-column label="路段名称" prop="name" width="120"></el-table-column>
-          <el-table-column label="路段类型" prop="chargingRule" width="120"></el-table-column>
-          <el-table-column label="所属地区" prop="chinaName" width="120"></el-table-column>
-          <el-table-column label="泊位数量" prop="parkingCount" width="100"></el-table-column>
-          <el-table-column label="限制泊位数" prop="parkingLimit" width="120"></el-table-column>
-          <el-table-column label="巡检员" prop="inspectorName" width="100"></el-table-column>
-          <el-table-column label="运维人员" prop="inspectorName" width="100"></el-table-column>
-          <el-table-column label="创建时间" prop="createTime" width="200"></el-table-column>
+          <el-table-column type="selection" width="75"></el-table-column>
+          <el-table-column label="路段名称" prop="name" width="160"></el-table-column>
+          <el-table-column label="路段类型" prop="chargingRule" width="150"></el-table-column>
+          <el-table-column label="所属地区" prop="chinaName" width="150"></el-table-column>
+          <el-table-column label="泊位数量" prop="parkingCount" width="140"></el-table-column>
+          <el-table-column label="限制泊位数" prop="parkingLimit" width="140"></el-table-column>
+          <el-table-column label="巡检员" prop="inspectorName" width="140"></el-table-column>
+          <el-table-column label="运维人员" prop="inspectorName" width="140"></el-table-column>
+          <el-table-column label="创建时间" prop="createTime" width="215"></el-table-column>
 
           <el-table-column label="操作" width="300">
             <template slot-scope="scope">
