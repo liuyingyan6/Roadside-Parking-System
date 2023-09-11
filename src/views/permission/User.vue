@@ -174,6 +174,11 @@
         },
         methods: {
 
+            //查看详情跳转
+            handleView(index, row) {
+                this.$router.push({path:`/userDetails/${row.id}`});
+            },
+
             //分页查询所有用户
             findPage() {
                 user.findPage(this.pageNum,this.pageSize,this.param).then(res => {
@@ -217,11 +222,6 @@
                 this.multipleSelection = val;
             },
 
-
-            //查看详情跳转
-            handleView(index, row) {
-
-            },
 
             //分页
             handleSizeChange(val) {

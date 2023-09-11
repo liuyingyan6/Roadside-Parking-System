@@ -13,6 +13,7 @@
     <el-card>
       <!--信息表单-->
       <el-table :data="logList" border stripe>
+        <el-table-column label="用户id" prop="userId"></el-table-column>
         <el-table-column label="时间" prop="createTime"></el-table-column>
         <el-table-column label="IP" prop="ip"></el-table-column>
         <el-table-column label="地区" prop="location"></el-table-column>
@@ -53,6 +54,8 @@ export default {
         console.log("", res);
         this.total = res.data.total;
         this.logList = res.data.records;
+      }).catch(error=>{
+        this.$message.error(error);
       })
     },
     handleSizeChange(newSize) {

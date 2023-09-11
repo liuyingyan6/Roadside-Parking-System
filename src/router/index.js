@@ -12,6 +12,19 @@ import MagnetometerLog from "@/views/device/MagnetometerLog.vue";
 import ManagerAccount from "@/views/permission/ManagerAccount";
 import Order from "@/views/permission/Order.vue";
 import OrderDetails from "@/views/secondaryMenu/OrderDetails.vue";
+import Cashflow from "@/views/finance/Cashflow";
+import Information from "@/views/sys/Information";
+import UserDetails from "@/views/secondaryMenu/UserDetails";
+import CarOrder from "@/views/permission/CarOrder";
+import Road from "@/views/road/Road";
+import Parking from "@/views/road/Parking";
+import UserFeedback from "@/views/feedback/UserFeedback";
+import InspectorFeedback from "@/views/feedback/InspectorFeedback";
+import InspectorFeedbackDetail from "@/views/feedback/InspectorFeedbackDetail";
+import Operator from "@/views/employee/Operator";
+import PdaLog from "@/views/device/PdaLog.vue";
+import Pda from "@/views/device/Pda.vue";
+import Revenue from "@/views/statistics/Revenue.vue";
 
 Vue.use(VueRouter)
 
@@ -36,6 +49,11 @@ const routes = [
                 path: '/role',
                 name: "Role",
                 component: Role
+            },
+            {
+                path: '/manager',
+                name: "ManagerAccount",
+                component: ManagerAccount
             },
             {
                 path: '/car',
@@ -80,14 +98,79 @@ const routes = [
                 component: MagnetometerLog
             },
             {
+                path: '/pda',
+                name: "Pda",
+                component: Pda
+            },
+            {
+                path: '/pdaLog/:id',
+                name: "PdaLog",
+                component: PdaLog
+            },
+            {
+                path: '/revenue',
+                name: "Revenue",
+                component: Revenue
+            },
+            {
                 path: '/order',
                 name: "Order",
                 component: Order,
             },
             {
-                path:'/orderDetails/:id',
+                path:'/orderDetails',
                 name: "OrderDetails",
                 component: OrderDetails
+            },
+            {
+                path:'/cashflow',
+                name: "Cashflow",
+                component: Cashflow
+            },
+            {
+                path:'/information',
+                name: "Information",
+                component: Information
+            },
+            {
+                path:`/userDetails/:id`,
+                name: "UserDetails",
+                component: UserDetails
+            },
+            {
+                path:'/carOrder',
+                name: "CarOrder",
+                component: CarOrder
+            },
+            {
+                path:'/road',
+                name: "Road",
+                component: Road
+            },
+            {
+                path:'/parking',
+                name: "Parking",
+                component: Parking
+            },
+            {
+                path:'/userFeedback',
+                name: "UserFeedback",
+                component: UserFeedback
+            },
+            {
+                path:'/inspectorFeedback',
+                name: "InspectorFeedback",
+                component: InspectorFeedback
+            },
+            {
+                path:'/inspectorFeedbackDetail',
+                name: "InspectorFeedbackDetail",
+                component: InspectorFeedbackDetail
+            },
+            {
+                path:'/operator',
+                name: "Operator",
+                component: Operator
             },
             {
                 path: '/information',
@@ -104,9 +187,9 @@ const routes = [
                 name: 'UserFeedbackDetails',
                 component: () => import('@/views/feedback/UserFeedbackDetails'),
             }
-        ]
-    },
 
+        ]
+    }
 ]
 
 const router = new VueRouter({
