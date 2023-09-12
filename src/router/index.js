@@ -73,6 +73,11 @@ const routes = [
                 // hidden: true
             },
             {
+                path: '/inspectorDetails',
+                name: 'InspectorDetails',
+                component: () => import('@/views/staffSys/InspectorDetails'),
+            },
+            {
                 path: '/user',
                 name: "User",
                 component: User
@@ -177,6 +182,7 @@ const routes = [
                 name: 'Information',
                 component: () => import('@/views/sys/Information'),
             },
+
             {
                 path: '/userFeedback',
                 name: 'UserFeedback',

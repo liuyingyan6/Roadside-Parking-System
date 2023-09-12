@@ -242,9 +242,12 @@
                     this.$message.info('已取消删除');
                 });
             },
-            //查看显示的对话框
+            //查看详情
             handleView(index, row) {
-
+                this.$router.push({
+                    name: 'InspectorDetails',
+                    params: { data: row }
+                });
             },
             //编辑
             handleEdit(index, row) {
@@ -351,8 +354,7 @@
             },
             //重置
             replacement() {
-                this.pageNum = 1;
-                this.pageSize = 5;
+                this.param = {}
                 this.findPage();
             },
             //分页查询所有业主
