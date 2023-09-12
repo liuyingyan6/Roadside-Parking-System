@@ -352,8 +352,8 @@
                     {id: 6, state: "进行中"},
                 ],
                 orderPayType: [
-                    {id: 0, payType: "微信"},
-                    {id: 1, payType: "支付宝"}
+                    {id: 1, payType: "微信"},
+                    {id: 0, payType: "支付宝"}
                 ],
                 pageNum: 1,
                 pageSize: 5,
