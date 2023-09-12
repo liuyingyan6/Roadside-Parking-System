@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Login from '@/views/Login'
-import Home from '@/views/Home'
+import Head from '@/views/sys/Head'
 import Role from '@/views/permission/Role'
 import Car from "@/views/permission/Car";
 import User from "@/views/permission/User";
@@ -26,6 +26,7 @@ import PdaLog from "@/views/device/PdaLog.vue";
 import Pda from "@/views/device/Pda.vue";
 import Revenue from "@/views/statistics/Revenue.vue";
 import Payment from "@/views/statistics/Payment";
+import Home from "@/views/sys/Home";
 
 Vue.use(VueRouter)
 
@@ -40,12 +41,18 @@ const routes = [
         name: 'Login',
         component: Login
     },
+
     {
-        path: '/home',
-        name: 'Home',
-        component: Home,
+        path: '/head',
+        name: 'Head',
+        component: Head,
         children: [
 
+            {
+                path: '/home',
+                name: 'Home',
+                component: Home
+            },
             {
                 path: '/role',
                 name: "Role",

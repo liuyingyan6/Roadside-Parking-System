@@ -3,8 +3,7 @@
         <el-header>
             <el-row>
                 <el-col :span="2">
-                    <div style="font-size: 22px;  line-height: 60px;text-align: center;color: #FFFFFF">后台管理系统</div>
-
+                    <a href="/home" style="font-size: 22px; line-height: 60px; text-align: center; color: #FFFFFF; text-decoration: none;">后台管理系统</a>
                 </el-col>
                 <el-col :span="21" style="margin-left: 20px">
                     <div>
@@ -15,8 +14,9 @@
                     <!--   头像下拉菜单 -->
                     <el-dropdown trigger="click">
                         <div class="circle">
-                            <el-avatar
-                                    src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
+                            <el-avatar>
+                                <img src="../../assets/aa.png" alt="">
+                            </el-avatar>
                         </div>
                         <el-dropdown-menu slot="dropdown">
                             <el-dropdown-item icon="el-icon-plus">我的</el-dropdown-item>
@@ -27,6 +27,8 @@
                 </el-col>
             </el-row>
         </el-header>
+
+
 
         <el-container>
             <el-aside :width="isCollapse ? '64px' : '200px'">
