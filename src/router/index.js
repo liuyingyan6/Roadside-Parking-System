@@ -128,16 +128,17 @@ const routes = [
                 component: Revenue
             },
             {
-              path: '/attendance',
-              name: "Attendance",
+                path: '/attendance',
+                name: "Attendance",
                 component: Attendance
             },
             {
                 path: '/order',
                 name: "Order",
-                component: Order,
+                component: Order
             },
-                path: '/order/:id', // Dynamic route parameter ":status"
+            {
+                path: '/order/:id',
                 name: 'OrderDetails',
                 component: ()=> import('../views/secondaryMenu/OrderDetails.vue')
 

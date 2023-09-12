@@ -14,7 +14,7 @@
       <el-form :inline="true">
         <el-form-item label="时间选择">
           <el-date-picker
-              v-model="dateTime"
+              v-model="param.dateTime"
               value-format="yyyy-MM-dd"
               type="datetimerange"
               :picker-options="pickerOptions"
@@ -40,6 +40,7 @@
       </el-col>
     </el-row>
     <el-row>
+      <el-card shadow="always">
       <!-- 表格 data：要绑定的数据  handleSelectionChange 多选的方法 -->
       <el-table
           ref="multipleTable"
@@ -52,38 +53,34 @@
         <el-table-column
             prop="inspectorName"
             label="巡检员名称"
-            width="120">
+            >
         </el-table-column>
-        <!-- 数据列 prop属性名 label显示列名  -->
-        <!--          <el-table-column-->
-        <!--              prop="createTime"-->
-        <!--              label="提交时间"-->
-        <!--              width="200">-->
-        <!--            <template slot-scope="scope">{{ scope.row.dateRegistration }}</template>-->
-        <!--          </el-table-column>-->
 
         <el-table-column
             prop="roadName"
             label="执勤街道"
-            width="120">
-        </el-table-column>
-        <el-table-column
-            prop="attendanceDay"
-            label="执勤天数"
-            width="120">
-        </el-table-column>
-        <el-table-column
-            prop="normalDays"
-            label="正常天数"
-            width="120">
-        </el-table-column>
-        <el-table-column
-            prop="leaveDays"
-            label="异常天数"
-            width="120">
+            >
         </el-table-column>
 
-        <el-table-column label="正常率" width="120">
+        <el-table-column
+            prop="attendanceDayCount"
+            label="执勤天数"
+            >
+        </el-table-column>
+
+        <el-table-column
+            prop="normalWorkingCount"
+            label="正常天数"
+            >
+        </el-table-column>
+
+        <el-table-column
+            prop="abnormalWorkCount"
+            label="异常天数"
+            >
+        </el-table-column>
+
+        <el-table-column label="正常率" >
           <template slot-scope="scope">{{ calculateNormalRate(scope.row) }}</template>
         </el-table-column>
 
@@ -98,6 +95,7 @@
           layout="total, sizes, prev, pager, next, jumper"
           :total="total"
       ></el-pagination>
+      </el-card>
     </el-row>
   </div>
 </template>
@@ -113,7 +111,7 @@ export default {
       pageSize: 5,
       total: 0,
       roleList:[],
-      dateTime: [], // Assuming dateTime is used for date range selection
+      param: {}, // Assuming dateTime is used for date range selection
       pickerOptions: {
         // Define your picker options here
       },
@@ -156,10 +154,10 @@ export default {
       if (this.dateTime && this.dateTime.length === 2) {
         const [startDate, endDate] = this.dateTime;
         const selectedDays = (endDate - startDate) / (24 * 60 * 60 * 1000) + 1;
-        const normalRate = ((row.normalDays / selectedDays) * 100) || 0;
+        const normalRate = ((row.normalWorkingCount / selectedDays) * 100) || 0;
         return normalRate.toFixed(2) + '%';
       } else {
-        const normalRate = (row.normalDays / row.attendanceDay) * 100 || 0;
+        const normalRate = (row.normalWorkingCount / row.attendanceDayCount) * 100 || 0;
         return normalRate.toFixed(2) + '%';
       }
     },
@@ -169,22 +167,17 @@ export default {
       //分页查询，给：roleList  total 赋值
       //后端需要：pageSize pageNum 查询条件name
       // 在查询业主之前，先获取巡检员数量
-     this.getInspectorCount();
-      this.$axios.get("/clockIn/page", {
-        params: {
-          pageNum: this.pageNum,
-          pageSize: this.pageSize,
-
-        }
-      }).then(res => {
+      if (this.param.dateTime != null) {
+        this.param.startTime = this.param.timeHorizon[0];
+        this.param.endTime = this.param.timeHorizon[1];
+      }
+      this.getInspectorCount();
+      this.$axios.post(`/clockIn/page/${this.pageNum}/${this.pageSize}`, this.param).then(res => {
         console.log("{}", res)
-        this.roleList = res.data.list;
+        this.roleList = res.data.records;
         this.total = res.data.total;
       });
     },
-    // getSum(arr) {
-    //   return arr.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-    // },
     getRevenueInfo() {
       // Implement your logic to fetch revenue information
     },

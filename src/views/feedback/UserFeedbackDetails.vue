@@ -4,6 +4,7 @@
                 type="success" icon="el-icon-edit" plain v-if="tableData.state!=1" style="margin-right: 160px"
                 @click="handleEdit()">反馈处理
         </el-button>
+
         <el-descriptions icon="el-icon-search" title="基本信息" :column="2" border style="width: 80%;margin: auto;">
             <el-descriptions-item label="反馈单号"> {{tableData.feedbackOdd}}</el-descriptions-item>
             <el-descriptions-item label="状态">
@@ -19,6 +20,8 @@
                 <img v-for="ele in tableData.img" src="" alt="">
             </el-descriptions-item>
         </el-descriptions>
+
+
         <el-dialog
                 title="工单处理"
                 :visible.sync="dialogVisible"
