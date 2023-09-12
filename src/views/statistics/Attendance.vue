@@ -9,6 +9,7 @@
         </el-breadcrumb>
       </el-card>
     </el-row>
+    <br>
     <el-row>
       <el-form :inline="true">
         <el-form-item label="时间选择">
@@ -33,7 +34,7 @@
     <el-row>
       <el-col :span="4">
         <el-card shadow="always">
-          <div>巡检员数量（个）</div>
+          <div>巡检员数量</div>
           <div>{{ inspectorCount }}</div>
         </el-card>
       </el-col>
