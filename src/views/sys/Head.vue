@@ -96,7 +96,6 @@
 
 
                 let managerId = localStorage.getItem("id")
-                console.log(managerId)
                 urlPermission.findPermission(managerId).then(res => {
                     this.menuList = res.data;
                 })
@@ -111,6 +110,7 @@
 <style lang="less" scoped>
     .el-header {
         background-color: #373d41;
+        /*position:fixed;*/
 
         > div {
             display: flex;
@@ -125,7 +125,7 @@
     .el-aside {
         background-color: #333744;
         height: 94vh;
-
+        /*position:fixed;*/
         .el-menu {
             border-right: 0;
         }

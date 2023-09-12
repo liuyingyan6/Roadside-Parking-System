@@ -43,13 +43,6 @@
                             label="订单编号"
                             width="120">
                     </el-table-column>
-                    <!-- 数据列 prop属性名 label显示列名  -->
-                    <!--          <el-table-column-->
-                    <!--              prop="createTime"-->
-                    <!--              label="提交时间"-->
-                    <!--              width="200">-->
-                    <!--            <template slot-scope="scope">{{ scope.row.dateRegistration }}</template>-->
-                    <!--          </el-table-column>-->
                     <el-table-column
                             prop="createTime"
                             label="提交时间"
@@ -86,12 +79,6 @@
                             width="120"
                     >
                         <template slot-scope="scope">
-                            <!--              <el-tag-->
-                            <!--                  :type="stateTagMap[scope.row.state].type"-->
-                            <!--                  disable-transitions-->
-                            <!--              >-->
-                            <!--                {{ stateTagMap[scope.row.state].text }}-->
-                            <!--              </el-tag>-->
                             <el-tag
                                     :type="stateTagMap[scope.row.status] ? stateTagMap[scope.row.status].type : 'default'"
                                     disable-transitions
@@ -292,7 +279,7 @@
 
             //订单详情
             handleParticulars(index, row) {
-                this.$router.push({path: `/orderDetails`});
+                this.$router.push({path: `/orderDetails/${row.id}`});
             },
 
             //显示添加的对话框

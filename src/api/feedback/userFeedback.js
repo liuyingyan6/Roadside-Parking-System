@@ -7,5 +7,12 @@ export default {
             method: 'post',
             data: param
         })
+    },
+    update(userFeedback){
+        return request({
+            url: `/userFeedback/update`,
+            method: 'put',
+            data: userFeedback
+        })
     }
 }

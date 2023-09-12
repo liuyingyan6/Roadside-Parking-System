@@ -69,11 +69,21 @@ const routes = [
                 component: Car
             },
             {
+                path: '/manager',
+                name: "ManagerAccount",
+                component: () => import('@/views/permission/ManagerAccount'),
+            },
+            {
                 path: '/inspector',
                 name: "Inspector",
                 component: () => import('@/views/staffSys/Inspector'),
                 meta: { title: 'Inspector.vue页面', icon: 'table' },
                 // hidden: true
+            },
+            {
+                path: '/inspectorDetails',
+                name: 'InspectorDetails',
+                component: () => import('@/views/staffSys/InspectorDetails'),
             },
             {
                 path: '/user',
@@ -179,7 +189,24 @@ const routes = [
                 path:'/payment',
                 name: "Payment",
                 component: Payment
+            },
+            {
+                path: '/information',
+                name: 'Information',
+                component: () => import('@/views/sys/Information'),
+            },
+
+            {
+                path: '/userFeedback',
+                name: 'UserFeedback',
+                component: () => import('@/views/feedback/UserFeedback'),
+            },
+            {
+                path: '/userFeedbackDetails',
+                name: 'UserFeedbackDetails',
+                component: () => import('@/views/feedback/UserFeedbackDetails'),
             }
+
         ]
     }
 ]

@@ -1,5 +1,6 @@
 <template>
 
+
   <div>
     <!--面包屑-->
     <el-breadcrumb separator="/">
@@ -419,6 +420,7 @@ export default {
   }
 };
 </script>
+
 <style scoped>
 
 </style>

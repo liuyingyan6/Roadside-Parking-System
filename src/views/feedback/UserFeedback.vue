@@ -34,7 +34,7 @@
                         ref="multipleTable"
                         :data="tableData"
                         tooltip-effect="dark"
-                        style="width: 100%;text-align: center;font-size: 18px"
+                        style="width: 100%; text-align: center;font-size: 18px"
                         @selection-change="handleSelectionChange">
 
                     <!-- 复选框 -->
@@ -77,7 +77,7 @@
                         <template slot-scope="scope">
                             <el-tag
                                     :type="scope.row.state === 1 ? 'success' : 'primary'"
-                                    disable-transitions>{{scope.row.state == 1 ? "正常" : "异常"}}
+                                    disable-transitions>{{scope.row.state == 1 ? "已处理" : "未处理"}}
                             </el-tag>
                         </template>
                     </el-table-column>
@@ -89,16 +89,14 @@
                     </el-table-column>
                     <el-table-column label="操作">
                         <template slot-scope="scope">
-                            <el-button-group>
-                                <el-button
-                                        type="success" icon="el-icon-edit" plain
-                                        @click="handleEdit(scope.$index,scope.row)">处理
-                                </el-button>
-                                <el-button
-                                        type="primary" icon="el-icon-view" plain
-                                        @click="handleView(scope.$index,scope.row)">详情
-                                </el-button>
-                            </el-button-group>
+                            <el-button
+                                    type="success" icon="el-icon-edit" plain v-if="scope.row.state!=1"
+                                    @click="handleEdit(scope.row)">处理
+                            </el-button>
+                            <el-button
+                                    type="primary" icon="el-icon-view" plain
+                                    @click="handleView(scope.row)">详情
+                            </el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -116,7 +114,28 @@
                 </el-pagination>
             </el-card>
         </el-row>
+
+        <el-dialog
+                title="工单处理"
+                :visible.sync="dialogVisible"
+                width="30%"
+                :before-close="handleClose">
+            <el-form :model="form" label-width="100px"  class="demo-ruleForm">
+                <el-form-item label="反馈内容" >
+                    <el-input type="textarea" v-model="form.feedbackText" :disabled="true"></el-input>
+                </el-form-item>
+                <el-form-item label="处理结果反馈">
+                    <el-input type="textarea" v-model="form.result"></el-input>
+                </el-form-item>
+                <el-form-item style="text-align: right">
+                    <el-button type="primary" @click="submitForm">确定</el-button>
+                    <el-button @click="resetForm">取消</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
     </div>
+
+
 </template>
 <script>
     import userFeedback from '@/api/feedback/userFeedback'
@@ -132,17 +151,49 @@
                 multipleSelection: [],
                 pageNum: 1,
                 pageSize: 5,
-                total: 0
+                total: 0,
+                form: {},
+                dialogVisible: false
             }
         },
         methods: {
-
-
+            handleView(row) {
+                this.$router.push({
+                    name: 'UserFeedbackDetails',
+                    params: { data: row }
+                });
+            },
+            handleClose(done) {
+                this.$confirm('确认关闭？')
+                    .then(_ => {
+                        done();
+                    })
+                    .catch(_ => {
+                    });
+            },
+            //编辑
+            handleEdit(row) {
+                this.form = {
+                    id: row.id,
+                    feedbackText: row.feedbackText
+                }
+                this.dialogVisible = true;
+            },
+            //确定
+            submitForm() {
+                userFeedback.update(this.form).then(res => {
+                    this.$message.success("处理成功")
+                    this.dialogVisible = false
+                    this.findPage()
+                })
+            },
+            resetForm() {
+                this.dialogVisible = false
+            },
             //重置
             replacement() {
-                this.pageNum = 1;
-                this.pageSize = 5;
-                this.findPage();
+                this.param = {}
+                this.findPage()
             },
             //分页查询所有业主
             findPage() {
@@ -163,23 +214,6 @@
             //复选框的方法
             handleSelectionChange(val) {
                 this.multipleSelection = val;
-            },
-
-            //编辑
-            handleEdit(index, row) {
-                this.dialogFormVisible = true;
-                this.disabled = false;
-                let obj = {};
-                Object.assign(obj, row);
-                this.form = obj;
-            },
-            handleView(){
-
-            },
-            //重置
-            reset() {
-                this.param = {}
-                this.findPage()
             }
         },
         created() {

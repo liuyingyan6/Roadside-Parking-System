@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-row :gutter="12">
+        <el-row :gutter="12" style="margin-bottom: 20px">
             <el-card shadow="always">
                 <el-breadcrumb separator-class="el-icon-arrow-right">
                     <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
@@ -73,7 +73,6 @@
     </div>
 </template>
 <script>
-    import axios from 'axios';
     export default {
         data() {
             return {
