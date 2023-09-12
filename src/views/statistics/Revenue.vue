@@ -265,7 +265,6 @@
                     ]
                 };
 
-
                 // 使用刚指定的配置项和数据显示图表。
                 funnelChart.setOption(funnelChartOption);
             },
@@ -382,12 +381,12 @@
                     <el-card shadow="always" style="width: 80%; height: 100px;">
                         <el-row>
                             <el-col :span="12">
-                                <div>订单收费率</div>
-                                <div>90%</div>
+                                <div>有效订单占比</div>
+                                <div>{{(this.conversionData.finishedParkingOrderCount/this.conversionData.totalOrderCount* 100).toFixed(2)}}</div>
                             </el-col>
                             <el-col :span="12">
-                                <div>订单满意率</div>
-                                <div>96%</div>
+                                <div>订单支付率</div>
+                              <div>{{ (this.conversionData.paidOrderCount / this.conversionData.validOrderCount * 100).toFixed(2) }}%</div>
                             </el-col>
                         </el-row>
                     </el-card>

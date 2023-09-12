@@ -18,6 +18,8 @@ import UserDetails from "@/views/secondaryMenu/UserDetails";
 import CarOrder from "@/views/permission/CarOrder";
 import Road from "@/views/road/Road";
 import Parking from "@/views/road/Parking";
+import ThirdParty from "@/views/permission/ThirdParty.vue";
+
 import UserFeedback from "@/views/feedback/UserFeedback";
 import InspectorFeedback from "@/views/feedback/InspectorFeedback";
 import InspectorFeedbackDetail from "@/views/feedback/InspectorFeedbackDetail";
@@ -25,6 +27,7 @@ import Operator from "@/views/employee/Operator";
 import PdaLog from "@/views/device/PdaLog.vue";
 import Pda from "@/views/device/Pda.vue";
 import Revenue from "@/views/statistics/Revenue.vue";
+import Attendance from "@/views/statistics/Attendance.vue";
 import Payment from "@/views/statistics/Payment";
 import Home from "@/views/sys/Home";
 
@@ -41,7 +44,6 @@ const routes = [
         name: 'Login',
         component: Login
     },
-
     {
         path: '/head',
         name: 'Head',
@@ -126,18 +128,27 @@ const routes = [
                 component: Revenue
             },
             {
+              path: '/attendance',
+              name: "Attendance",
+                component: Attendance
+            },
+            {
                 path: '/order',
                 name: "Order",
                 component: Order,
             },
-            {
-                path:'/orderDetails',
-                name: "OrderDetails",
-                component: OrderDetails
+                path: '/order/:id', // Dynamic route parameter ":status"
+                name: 'OrderDetails',
+                component: ()=> import('../views/secondaryMenu/OrderDetails.vue')
+
+            },{
+                path: '/thirdParty',
+                name: ThirdParty,
+                component: ThirdParty
             },
             {
                 path:'/cashflow',
-                name: "Cashflow",
+                    name: "Cashflow",
                 component: Cashflow
             },
             {

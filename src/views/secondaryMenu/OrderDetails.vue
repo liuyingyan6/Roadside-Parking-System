@@ -3,41 +3,46 @@
 
   <div>
     <!--面包屑-->
-    <el-breadcrumb separator="/">
+    <el-breadcrumb separator="/" style=";margin-left: 30px;">
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item>系统管理</el-breadcrumb-item>
       <el-breadcrumb-item>订单详情</el-breadcrumb-item>
     </el-breadcrumb>
     <br>
-    <el-steps :active="1">
-      <el-step title="车辆驶入" description="2017-07-19 15:43:23"></el-step>
+
+    <el-steps :active="JSON.parse(this.$route.query.orderData).status"
+              style="width: 80%;display: flex;margin-left: 20px; ">
+      &nbsp; &nbsp;<el-step title="车辆驶入" description="2017-07-19 15:43:23"></el-step>
       <el-step title="车辆驶离" description="2017-07-19 15:43:23"></el-step>
       <el-step title="订单支付" description="2017-07-19 15:43:23"></el-step>
     </el-steps>
 
+
     <!--    <div class="payment-icon">&#xf09d;</div>-->
-    <hr>
+    <br>
     <template>
-      <div class="container">
-        <el-card class="box-card">
+      <div class="container" style="display: flex; justify-content: space-between; gap: 0px;margin-left: 20px;">
+        <el-card class="box-card" style="width: 50%;">
           <!-- 第一个 el-card 组件的内容 -->
           <!-- 注意: 去除了包裹内容的 div -->
-          订单编号: &nbsp; 2020
+
+
+          <span>订单编号:</span> &nbsp; <span>{{ orderData.orderNumber }}</span>
           <br>
-          车牌号码 &nbsp; &nbsp; 粤S·8D3N2
+          <span>车牌号码:</span> &nbsp; <span>{{ orderData.carNumber }}</span>
           <br>
           绑定用户: 未绑定/张三丰
           <br>
-          所属路段: &nbsp;天安1路
+          <span>所属路段:</span> &nbsp; <span>{{ orderData.roadName }}</span>
           <br>
-          泊位编号: &nbsp;A-123
+          <span>泊位编号:</span> &nbsp; <span>{{ orderData.parkingNumber }}</span>
           <br>
           地磁编号: &nbsp;21312312
           <br>
-          巡检员: &nbsp;A巡检员
+          <span>巡检员&nbsp;&nbsp;&nbsp;:</span> &nbsp; <span>{{ orderData.inspectorName }}</span>
         </el-card>
 
-        <el-card class="box-card">
+        <el-card class="box-card" style="width: 50%;">
           <!-- 第二个 el-card 组件的内容 -->
           <!-- 注意: 去除了包裹内容的 div -->
           驶入时间: &nbsp; 2021-04-09 02:32:04
@@ -50,11 +55,16 @@
     </template>
 
     <template>
+      <br>
+      <br>
+
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>路段规则：全天收费</span>
       <el-table
           :data="tableData"
           :span-method="objectSpanMethod"
           border
-          style="width: 100%; margin-top: 20px">
+          style="width: 80%; margin-top: 20px;margin-left: 20px; ">
+
         <el-table-column
             prop="id"
             label="时段"
@@ -86,11 +96,13 @@
         </el-table-column>
       </el-table>
       <br>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>路段规则：分时段收费</span>
       <el-table
           :data="tableData2"
           :span-method="objectSpanMethod"
           border
-          style="width: 100%; margin-top: 20px">
+          style="width: 80%; margin-top: 20px;margin-left: 20px;">
         <el-table-column
             prop="id"
             label="时段"
@@ -122,11 +134,13 @@
         </el-table-column>
       </el-table>
       <br>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>路段规则：分时段禁停收费</span>
       <el-table
           :data="tableData3"
           :span-method="objectSpanMethod"
           border
-          style="width: 100%; margin-top: 20px">
+          style="width: 80%; margin-top: 20px ;margin-left: 20px;">
         <el-table-column
             prop="id"
             label="时段"
@@ -158,12 +172,14 @@
         </el-table-column>
       </el-table>
       <br>
-      <hr>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>
+费项信息</span>
       <el-table
           :data="tableData4"
           :span-method="objectSpanMethod"
           border
-          style="width: 100%; margin-top: 20px">
+          style="width: 80%; margin-top: 20px ;margin-left: 20px;">
         <el-table-column
             prop="id"
             label="时段"
@@ -192,8 +208,11 @@
       </el-table>
       <el-header>
         <el-row>
-          <el-col :span="24">
-            <div class="grid-content bg-purple-dark"> <el-link :underline="false">合计: 待核算</el-link></div>
+          <el-col :span="12">
+            <div class="grid-content bg-purple-light">
+              <span class="texts" style="color: dimgray ">合计:</span>
+              &nbsp;&nbsp; <span class="text1 bg-purple" :style="statusTextColor">{{ statusText }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </div>
           </el-col>
         </el-row>
       </el-header>
@@ -202,10 +221,29 @@
   </div>
 </template>
 <style scoped>
+.bg-purple {
+
+}
+
+.text1 {
+  font-size: 60px;
+  text-align: right; /* 文本向右对齐 */
+  align-items: center; /* 垂直居中对齐 */
+  justify-content: center; /* 水平居中对齐 */
+}
+
+.texts {
+  font-size: 40px;
+  text-align: right; /* 文本向右对齐 */
+  align-items: center; /* 垂直居中对齐 */
+  justify-content: center; /* 水平居中对齐 */
+}
+
 .container {
   display: flex; /* 使用 Flex 布局 */
   justify-content: space-between; /* 在容器中平均分配空间，让两个 el-card 并排显示 */
-  width: 100%;
+  width: 80%;
+
 }
 
 .text {
@@ -215,7 +253,8 @@
 .item {
   padding: 18px 0;
 }
-.box-card{
+
+.box-card {
   width: 900px;
 }
 
@@ -223,14 +262,15 @@
   border-radius: 4px;
 }
 
-.bg-purple-dark {
-  background: #99a9bf;
+.bg-purple-light {
+  background: #e5e9f2;
 }
 
 .grid-content {
   border-radius: 8px;
-  min-height: 36px;
-  /*以下3个属性，可以帮我们实现 文字居中对齐*/
+  min-height: 100px;
+  min-width: 165%;
+  /*以下3个属性，2以帮我们实现 文字居中对齐*/
 
   text-align: right;
   color: white;
@@ -239,10 +279,32 @@
 </style>
 <
 <script>
+import router from "@/router";
+
 const axios = require('axios');
+
 export default {
+
   data() {
+
     return {
+
+      orderData: {
+
+        status: '',
+        orderNumber: '',
+        carNumber: '',
+        user: '',
+        roadName: '',
+        parkingNumber: '',
+        sensorNumber: '',
+        inspectorName: '',
+        enterTime: '2021-04-09 02:32:04',
+        parkingDuration: '1小时12分钟',
+      },
+      orderId: null,
+
+
       // ...other data properties
       progressPercentage: 100, // Set the initial percentage
       events: [
@@ -251,6 +313,7 @@ export default {
         {type: '订单支付', timestamp: '2017-07-19 15:43:23'},
         // 添加更多事件...
       ],
+      form: {},
       param: {
         carNumber: ""
       },
@@ -386,19 +449,22 @@ export default {
         Billing: '',
         Charges: '',
         CapAmount: ''
-      }]
+      }],
+
 
     };
   },
 
 
   methods: {
+
     completePayment() {
       // Perform your payment logic here
       // Set the progress percentage to 100 when payment is completed
       this.progressPercentage = 100;
     },
     objectSpanMethod({row, column, rowIndex, columnIndex}) {
+
       if (columnIndex === 0) {
         if (rowIndex % 2 === 0) {
           return {
@@ -417,6 +483,52 @@ export default {
   },
   created() {
 
+    // Access the 'id' parameter from route params
+    const id = this.$route.params.id;
+
+    // Access the 'orderData' query parameter and parse it if needed
+    const orderData = JSON.parse(this.$route.query.orderData);
+
+
+    // Now, you can use 'id' and 'orderData' in this component
+
+    console.log('id:', id);
+    console.log('orderData:', orderData);
+  }, mounted() {
+    // 使用JSON.parse将路由参数解析为JavaScript对象，并赋值给orderData属性
+    this.orderData = JSON.parse(this.$route.query.orderData);
+  },
+  computed:{
+    statusText() {
+      console.log("Entering statusText()");
+      const status = JSON.parse(this.$route.query.orderData).status;
+      console.log("status:", status);
+      switch (status) {
+        case 1:
+          console.log("Returning '待核算'");
+          return '待核算';
+        // case 2:
+        //   console.log("Returning '已完成'");
+        //   return '已完成';
+        default:
+          console.log("Returning '其他状态'");
+          return this.orderData.orderAmount;
+      }
+    },
+    statusTextColor() {
+      // You can customize text colors based on status values
+      const status = JSON.parse(this.$route.query.orderData).status;
+      console.log("status:", status);
+      switch (status) {
+
+        case 1:
+          return { color: 'tomato' };
+        // case '已完成':
+        //   return { color: 'green' };
+        default:
+          return { color: 'gray' };
+      }
+    },
   }
 };
 </script>
