@@ -168,7 +168,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer" style="text-align: center" v-if="!disabled">
-        <el-button type="primary" @click="saveOrUpdate()">确 定</el-button>
+        <el-button type="primary" @click="saveOrUpdate()">确定</el-button>
         <el-button type="danger" @click="resetForm()">返回</el-button>
       </div>
     </el-dialog>

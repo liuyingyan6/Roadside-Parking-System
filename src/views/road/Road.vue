@@ -1,4 +1,4 @@
-<template>
+<template xmlns:el-col="http://www.w3.org/1999/html">
   <div>
     <el-row :gutter="12">
       <el-card shadow="always">
@@ -14,13 +14,20 @@
       <el-card>
         <el-form :inline="true" :model="param">
           <el-form-item>
-            <el-input v-model="param.searchContent" placeholder="路段名称" style="width:150px"></el-input>
-            <el-input v-model="param.searchContent" placeholder="路段类型" style="width:150px"></el-input>
-            <el-input v-model="param.searchContent" placeholder="巡检员名称" style="width:150px"></el-input>
+            <el-input v-model="param.roadName" placeholder="路段名称" style="width:150px"></el-input>
           </el-form-item>
+
           <el-form-item>
-            <el-button type="primary" @click="queryRoad()">查询</el-button>
-            <el-button type="info" plain onclick="location.href='/road.vue'">重置</el-button>
+            <el-input v-model="param.chargingRule" placeholder="路段类型" style="width:150px"></el-input>
+          </el-form-item>
+
+          <el-form-item>
+            <el-input v-model="param.inspectorName" placeholder="巡检员名称" style="width:150px"></el-input>
+          </el-form-item>
+
+          <el-form-item>
+            <el-button type="primary" @click="searchRoad">查询</el-button>
+            <el-button type="info" plain @click="clear">重置</el-button>
           </el-form-item>
         </el-form>
       </el-card>
@@ -38,19 +45,24 @@
         <el-table :data="roadList" border stripe>
           <!-- 复选框 -->
           <el-table-column type="selection" width="55"></el-table-column>
-          <el-table-column label="路段名称" prop="name" width="120"></el-table-column>
-          <el-table-column label="路段类型" prop="chargingRule" width="120"></el-table-column>
+          <el-table-column label="路段名称" prop="roadName" width="120"></el-table-column>
+          <el-table-column label="路段类型" prop="chargingRule" width="200"></el-table-column>
           <el-table-column label="所属地区" prop="chinaName" width="120"></el-table-column>
-          <el-table-column label="泊位数量" prop="parkingCount" width="120"></el-table-column>
-          <el-table-column label="限制泊位数" prop="parkingLimit" width="120"></el-table-column>
-          <el-table-column label="巡检员" prop="inspectorName" width="120"></el-table-column>
-          <el-table-column label="运维人员" prop="inspectorName" width="120"></el-table-column>
+          <el-table-column label="泊位数量" prop="parkingCount" width="100"></el-table-column>
+          <el-table-column label="限制泊位数" prop="parkingLimit" width="100"></el-table-column>
+          <el-table-column label="巡检员" prop="inspectorName" width="100"></el-table-column>
+          <el-table-column label="运维人员" prop="operatorName" width="100"></el-table-column>
           <el-table-column label="创建时间" prop="createTime" width="200"></el-table-column>
 
-          <el-table-column label="操作">
+          <el-table-column label="操作" width="300">
             <template slot-scope="scope">
               <el-button type="primary" size="mini" @click="showEditDialog(scope.row)">编辑</el-button>
-              <el-button type="primary" size="mini" onclick="location.href='/parking.vue'">泊位管理</el-button>
+              <el-button type="danger" size="mini" @click="removeRoad(scope.row.id)">删除</el-button>
+              <el-button size="mini"
+                         :type="scope.row.state == 1 ? 'success' : 'warning'"
+                         @click="Disabled(scope.row)">{{ scope.row.state == 0 ? '禁用' : '恢复' }}
+              </el-button>
+              <el-button type="info" size="mini" onclick="location.href='/parking'">泊位管理</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -59,7 +71,7 @@
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page="pageNum"
-            :page-sizes="[5,10,15]"
+            :page-sizes="[3,5,10,15]"
             :page-size="pageSize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="total"
@@ -68,109 +80,460 @@
     </el-row>
 
     <!-- 新建 -->
-    <el-dialog title="新建路段信息" :visible.sync="addDialogVisible" width="50%" @close="addRoadFormClose">
-      <el-form label-width="120px" :model="addRoadForm" ref="ruleForm">
+    <el-dialog title="新建路段信息" :visible.sync="addDialogVisible" width="700px">
+      <el-form label-width="120px" :model="addRoadForm">
 
-        <el-form-item label="路段名称" :label-width="formLabelWidth" prop="carNumber">
-          <el-input v-model="addRoadForm.name" placeholder="请输入路段名称" autocomplete="off"
+        <el-form-item label="路段名称" prop="roadName">
+          <el-input v-model="addRoadForm.roadName" placeholder="请输入路段名称" autocomplete="off"
                     style="width: 300px;"></el-input>
         </el-form-item>
 
-        <el-form-item label="车辆类型" :label-width="formLabelWidth" prop="carTypeId">
-          <el-select v-model="addRoadForm.chargingRule" placeholder="请选择车辆类型" style="width: 300px;">
-            <el-option v-for="charge in chargingRules" :label="charge.typeName"
+        <el-form-item label="路段类型" prop="chargingRule">
+          <el-select v-model="addRoadForm.chargeId" placeholder="请选择路段类型" style="width: 300px;">
+            <el-option v-for="charge in chargingRules"
+                       :label="charge.chargingRule"
                        :value="charge.id"></el-option>
           </el-select>
         </el-form-item>
 
-        <el-form-item label="所属地区" :label-width="formLabelWidth" prop="frameNumber">
-          <el-input v-model="addRoadForm.chinaName" placeholder="请输入车架号" autocomplete="off"
-                    style="width: 300px;"></el-input>
-        </el-form-item>
-
-        <el-form-item label="泊位数量" :label-width="formLabelWidth" prop="motorNumber">
-          <el-input v-model="addRoadForm.parkingCount" placeholder="请输入电机号" autocomplete="off"
-                    style="width: 300px;"></el-input>
-        </el-form-item>
-
-        <el-form-item label="限制泊位数" :label-width="formLabelWidth" prop="motorNumber">
-          <el-input v-model="addRoadForm.parkingLimit" placeholder="请输入电机号" autocomplete="off"
-                    style="width: 300px;"></el-input>
-        </el-form-item>
-
-        <el-form-item label="巡检员" :label-width="formLabelWidth" prop="carTypeId">
-          <el-select v-model="addRoadForm.inspectorName" placeholder="请选择巡检员" style="width: 300px;">
-            <el-option v-for="inspector in inspectors" :label="inspector.name"
-                       :value="inspector.id"></el-option>
+        <el-form-item label="所属地区" prop="chinaId">
+          <el-select
+              v-model="addRoadForm.chinaId"
+              filterable
+              remote
+              reserve-keyword
+              placeholder="请输入所属地区"
+              :remote-method="remoteMethod"
+              :loading="loading"
+              style="width: 300px">
+            <el-option
+                v-for="item in options"
+                :label="item.name"
+                :value="item.id">
+            </el-option>
           </el-select>
         </el-form-item>
 
-        <el-form-item label="运维员" :label-width="formLabelWidth" prop="carTypeId">
-          <el-select v-model="addRoadForm.inspectorName" placeholder="请选择运维员" style="width: 300px;">
-            <el-option v-for="admin in admins" :label="admin.name"
-                       :value="admin.id"></el-option>
-          </el-select>
+        <el-form-item label="巡检员" prop="inspectorId">
+          <template>
+            <el-select
+                v-model="addRoadForm.inspector"
+                multiple
+                filterable
+                remote
+                collapse-tags
+                reserve-keyword
+                placeholder="请选择巡检员"
+                :remote-method="remoteInspector"
+                :loading="loading"
+                style="width: 300px">
+              <el-option
+                  v-for="inspector in inspectors"
+                  :label="inspector.name"
+                  :value="inspector">
+              </el-option>
+            </el-select>
+          </template>
         </el-form-item>
 
-        <el-form-item label="创建时间" :label-width="formLabelWidth" prop="dateRegistration">
+        <el-form-item label="运维员" prop="operatorId">
+          <template>
+            <el-select
+                v-model="addRoadForm.operator"
+                multiple
+                filterable
+                remote
+                collapse-tags
+                reserve-keyword
+                placeholder="请选择运维员"
+                :remote-method="remoteOperator"
+                :loading="loading"
+                style="width: 300px">
+              <el-option
+                  v-for="operator in operators"
+                  :label="operator.operatorName"
+                  :value="operator">
+              </el-option>
+            </el-select>
+          </template>
+        </el-form-item>
+
+        <el-form-item label="泊位数量" prop="parkingCount">
+          <el-input v-model="addRoadForm.parkingCount" placeholder="请输入泊位数" autocomplete="off"
+                    style="width: 300px;"></el-input>
+        </el-form-item>
+
+        <el-form-item label="限制泊位数" prop="parkingLimit">
+          <el-input v-model="addRoadForm.parkingLimit" placeholder="请输入限制泊位数" autocomplete="off"
+                    style="width: 300px;"></el-input>
+        </el-form-item>
+
+        <template>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <el-form-item label="收费规则:" prop="status">
+              <el-radio-group v-model="addRoadForm.chargeId">
+                <el-radio :label="1">全天收费</el-radio>
+                <el-radio :label="2">分时段收费</el-radio>
+                <el-radio :label="3">分时段禁停收费</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </div>
+
+          <div v-if="addRoadForm.chargeId == 1">
+            <el-table
+                :data="tableData"
+                :span-method="objectSpanMethod"
+                border
+                style="width: 100%; margin-top: 20px">
+              <el-table-column
+                  prop="id"
+                  label="时段"
+                  width="180">
+              </el-table-column>
+              <el-table-column
+                  prop="timeFrame"
+                  label="时段">
+              </el-table-column>
+              <el-table-column
+                  prop="PeriodOfFime"
+                  label="时间段">
+              </el-table-column>
+              <el-table-column
+                  prop="FreeDuration"
+                  label="免费时长">
+              </el-table-column>
+              <el-table-column
+                  prop="Billing"
+                  label="计费包含免费时长">
+              </el-table-column>
+              <el-table-column
+                  prop="Charges"
+                  label="收费标准">
+              </el-table-column>
+              <el-table-column
+                  prop="CapAmount"
+                  label="封顶金额">
+              </el-table-column>
+            </el-table>
+          </div>
+          <div v-else-if="addRoadForm.chargeId == 2">
+            <el-table
+                :data="tableData2"
+                :span-method="objectSpanMethod"
+                border
+                style="width: 100%; margin-top: 20px">
+              <el-table-column
+                  prop="id"
+                  label="时段"
+                  width="180">
+              </el-table-column>
+              <el-table-column
+                  prop="timeFrame"
+                  label="时段">
+              </el-table-column>
+              <el-table-column
+                  prop="PeriodOfFime"
+                  label="时间段">
+              </el-table-column>
+              <el-table-column
+                  prop="FreeDuration"
+                  label="免费时长">
+              </el-table-column>
+              <el-table-column
+                  prop="Billing"
+                  label="计费包含免费时长">
+              </el-table-column>
+              <el-table-column
+                  prop="Charges"
+                  label="收费标准">
+              </el-table-column>
+              <el-table-column
+                  prop="CapAmount"
+                  label="封顶金额">
+              </el-table-column>
+            </el-table>
+          </div>
+          <div v-else-if="addRoadForm.chargeId == 3">
+            <el-table
+                :data="tableData3"
+                :span-method="objectSpanMethod"
+                border
+                style="width: 100%; margin-top: 20px">
+              <el-table-column
+                  prop="id"
+                  label="时段"
+                  width="180">
+              </el-table-column>
+              <el-table-column
+                  prop="timeFrame"
+                  label="时段">
+              </el-table-column>
+              <el-table-column
+                  prop="PeriodOfFime"
+                  label="时间段">
+              </el-table-column>
+              <el-table-column
+                  prop="FreeDuration"
+                  label="免费时长">
+              </el-table-column>
+              <el-table-column
+                  prop="Billing"
+                  label="计费包含免费时长">
+              </el-table-column>
+              <el-table-column
+                  prop="Charges"
+                  label="收费标准">
+              </el-table-column>
+              <el-table-column
+                  prop="CapAmount"
+                  label="封顶金额">
+              </el-table-column>
+            </el-table>
+          </div>
+        </template>
+
+        <el-form-item label="路段状态:" prop="state">
+          <el-radio-group v-model="addRoadForm.state">
+            <el-radio :label="0">正常</el-radio>
+            <el-radio :label="1">禁用</el-radio>
+          </el-radio-group>
+        </el-form-item>
+
+        <el-form-item label="创建时间" prop="createTime">
           <el-date-picker
-              v-model="addRoadForm.createTime" format="yyyy-MM-dd" value-format="yyyy-MM-dd"
-              type="date"
-              placeholder="年-月-日" style="width: 300px;">
+              v-model="addRoadForm.createTime"
+              type="datetime"
+              value-format="yyyy-MM-dd HH:mm:ss" style="width: 200px">
           </el-date-picker>
         </el-form-item>
-
       </el-form>
+
       <div slot="footer" class="dialog-footer" style="text-align: center">
-        <el-button type="primary" @click="saveOrUpdate()">确 定</el-button>
-        <el-button type="danger" @click="resetForm()">返回</el-button>
+        <el-button type="primary" @click="addRoad">确定</el-button>
+        <el-button type="danger" @click="addDialogVisible = false">返回</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 编辑 -->
+    <el-dialog title="编辑路段信息" :visible.sync="editDialogVisible" width="700px">
+      <el-form label-width="120px" :model="editRoadForm">
+
+        <el-form-item label="路段名称" prop="roadName">
+          <el-input v-model="editRoadForm.roadName" placeholder="请输入路段名称" autocomplete="off"
+                    style="width: 300px;"></el-input>
+        </el-form-item>
+
+        <el-form-item label="路段类型" prop="chargingRule">
+          <el-select v-model="editRoadForm.chargeId" placeholder="请选择路段类型" style="width: 300px;">
+            <el-option v-for="charge in chargingRules"
+                       :label="charge.chargingRule"
+                       :value="charge.id"></el-option>
+          </el-select>
+        </el-form-item>
+
+        <template>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <el-form-item label="收费规则:" prop="status">
+              <el-radio-group v-model="editRoadForm.chargeId">
+                <el-radio :label="1">全天收费</el-radio>
+                <el-radio :label="2">分时段收费</el-radio>
+                <el-radio :label="3">分时段禁停收费</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </div>
+
+          <div v-if="editRoadForm.chargeId == 1">
+            <el-table
+                :data="tableData"
+                :span-method="objectSpanMethod"
+                border
+                style="width: 100%; margin-top: 20px">
+              <el-table-column
+                  prop="id"
+                  label="时段"
+                  width="180">
+              </el-table-column>
+              <el-table-column
+                  prop="timeFrame"
+                  label="时段">
+              </el-table-column>
+              <el-table-column
+                  prop="PeriodOfFime"
+                  label="时间段">
+              </el-table-column>
+              <el-table-column
+                  prop="FreeDuration"
+                  label="免费时长">
+              </el-table-column>
+              <el-table-column
+                  prop="Billing"
+                  label="计费包含免费时长">
+              </el-table-column>
+              <el-table-column
+                  prop="Charges"
+                  label="收费标准">
+              </el-table-column>
+              <el-table-column
+                  prop="CapAmount"
+                  label="封顶金额">
+              </el-table-column>
+            </el-table>
+          </div>
+          <div v-else-if="editRoadForm.chargeId == 2">
+            <el-table
+                :data="tableData2"
+                :span-method="objectSpanMethod"
+                border
+                style="width: 100%; margin-top: 20px">
+              <el-table-column
+                  prop="id"
+                  label="时段"
+                  width="180">
+              </el-table-column>
+              <el-table-column
+                  prop="timeFrame"
+                  label="时段">
+              </el-table-column>
+              <el-table-column
+                  prop="PeriodOfFime"
+                  label="时间段">
+              </el-table-column>
+              <el-table-column
+                  prop="FreeDuration"
+                  label="免费时长">
+              </el-table-column>
+              <el-table-column
+                  prop="Billing"
+                  label="计费包含免费时长">
+              </el-table-column>
+              <el-table-column
+                  prop="Charges"
+                  label="收费标准">
+              </el-table-column>
+              <el-table-column
+                  prop="CapAmount"
+                  label="封顶金额">
+              </el-table-column>
+            </el-table>
+          </div>
+          <div v-else-if="editRoadForm.chargeId == 3">
+            <el-table
+                :data="tableData3"
+                :span-method="objectSpanMethod"
+                border
+                style="width: 100%; margin-top: 20px">
+              <el-table-column
+                  prop="id"
+                  label="时段"
+                  width="180">
+              </el-table-column>
+              <el-table-column
+                  prop="timeFrame"
+                  label="时段">
+              </el-table-column>
+              <el-table-column
+                  prop="PeriodOfFime"
+                  label="时间段">
+              </el-table-column>
+              <el-table-column
+                  prop="FreeDuration"
+                  label="免费时长">
+              </el-table-column>
+              <el-table-column
+                  prop="Billing"
+                  label="计费包含免费时长">
+              </el-table-column>
+              <el-table-column
+                  prop="Charges"
+                  label="收费标准">
+              </el-table-column>
+              <el-table-column
+                  prop="CapAmount"
+                  label="封顶金额">
+              </el-table-column>
+            </el-table>
+          </div>
+        </template>
+      </el-form>
+
+      <div slot="footer" class="dialog-footer" style="text-align: center">
+        <el-button type="primary" @click="editRoad">保存编辑</el-button>
+        <el-button type="danger" @click="editDialogVisible = false">返回</el-button>
       </div>
     </el-dialog>
 
     <!-- 收费编辑 -->
-    <el-dialog title="收费设置" :visible.sync="editDialogVisible" width="50%" @close="editUserFormClose">
+    <!-- :visible.sync="editDialogVisible" -->
+    <el-dialog title="收费设置" width="60%" class="edit-dialog">
+
       <el-form :model="editRoadForm"
-               ref="editUserFormRef"
                label-width="100px"
-               class="demo-ruleForm">
+               class="demo-ruleForm form-left"
+               style="margin: auto">
 
-        <el-form-item label="繁忙时间段" prop="timeType">
-          <el-date-picker
-              v-model="editRoadForm.timeType" type="date"
-              placeholder="请选择上牌日期"
-              value-format="yyyy-MM-dd" style="width: 300px">
-          </el-date-picker>
-        </el-form-item>
+        <el-row style="margin: auto;">
+          <el-form-item label="路段类型" prop="chargingRule">
+            <el-select v-model="editRoadForm.chargeId" placeholder="请选择路段类型" style="width: 240px;">
+              <el-option v-for="charge in chargingRules"
+                         :label="charge.chargingRule"
+                         :value="charge.id"></el-option>
+            </el-select>
+          </el-form-item>
+        </el-row>
 
-        <el-form-item label="免费时长" prop="freeDuration">
-          <el-input v-model="editRoadForm.freeDuration" style="width: 300px"></el-input>
-        </el-form-item>
+        <el-row>
+          <el-col :span="11" style="margin-left: -200px;">
+            <el-form-item label="繁忙时间段" prop="timePeriod">
+              <el-input v-model="editRoadForm.timePeriod" style="width: 240px;"></el-input>
+            </el-form-item>
 
-        <el-form-item label="计费(包括免费时长)" prop="billFreeDuration">
-          <el-select v-model="editRoadForm.billFreeDuration" placeholder="请选择是否锁定账户">
-            <el-option label="否" value="0"></el-option>
-            <el-option label="是" value="1"></el-option>
-          </el-select>
-        </el-form-item>
+            <el-form-item label="免费时长" prop="freeDuration">
+              <el-input v-model="editRoadForm.freeDuration" style="width: 240px;"></el-input>
+            </el-form-item>
 
-        <el-form-item label="收费标准" prop="chargeRate">
-          <el-input v-model="editRoadForm.chargeRate" style="width: 300px"></el-input>
-        </el-form-item>
-        <el-form-item label="封顶金额" prop="maximumCharge">
-          <el-input v-model="editRoadForm.maximumCharge" style="width: 300px"></el-input>
-        </el-form-item>
+            <el-form-item label="收费标准" prop="chargeRate">
+              <el-input v-model="editRoadForm.chargeRate" style="width: 240px;"></el-input>
+            </el-form-item>
+            <el-form-item label="封顶金额" prop="maximumCharge">
+              <el-input v-model="editRoadForm.maximumCharge" style="width: 240px"></el-input>
+            </el-form-item>
+          </el-col>
+
+          <!-- 第二张表 -->
+          <el-col :span="2">
+            <div style="width: 1px;height: 100%;border-right: 1px dashed #ccc"></div>
+          </el-col>
+          <el-col :span="11" style="margin-left: 200px;">
+            <el-form-item label="非繁忙时间段" prop="timePeriod">
+              <el-input v-model="editRoadForm.timePeriod" style="width: 240px;"></el-input>
+            </el-form-item>
+
+            <el-form-item label="免费时长" prop="freeDuration">
+              <el-input v-model="editRoadForm.freeDuration" style="width: 240px"></el-input>
+            </el-form-item>
+
+            <el-form-item label="收费标准" prop="chargeRate">
+              <el-input v-model="editRoadForm.chargeRate" style="width: 240px"></el-input>
+            </el-form-item>
+            <el-form-item label="封顶金额" prop="maximumCharge">
+              <el-input v-model="editRoadForm.maximumCharge" style="width: 240px"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
 
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="editUser">保存</el-button>
+        <el-button type="primary" @click="editRoad">保存</el-button>
         <el-button @click="editDialogVisible = false">取消</el-button>
       </span>
     </el-dialog>
+
   </div>
 </template>
 
 <script>
 import road from "@/api/road";
+import axios from "axios";
 
 export default {
   data() {
@@ -179,34 +542,115 @@ export default {
       pageSize: 5,
       total: 0,
       roadList: [], //所有路段
-      chargingRules: [],
-      inspectors: [],
-      admins: [],
+      chargingRules: [], //路段收费类型
+      inspectors: [], //巡检员
+      operators: [], //运维员
       multipleSelection: [], //保存选中的值
+      options: [], //远程表
+      loading: false, //是否正在从远程获取数据
       addDialogVisible: false,
       editDialogVisible: false,
-      freeDuration: "",
-      addRoadForm: {
-        name: "",
-        chargingRule: "",
-        chinaName: "",
-        parkingCount: "",
-        parkingLimit: "",
-        inspectorName: "",
-        createTime: ""
-      },
-      editRoadForm: {
-        id: -1,
-        timeType: "",
-        freeDuration: "",
-        billFreeDuration: [],
-        chargeRate: "",
-        maximumCharge: ""
-      },
-      param: {
-        searchContent: ""
-      },
-      formLabelWidth: '120px'
+
+      param: {},
+      addRoadForm: {},
+      editRoadForm: {},
+
+      tableData: [{
+        id: '工作日',
+        timeFrame: '繁忙时段',
+        FreeDuration: '30分钟',
+        Billing: '是',
+        Charges: '5元/30分钟',
+        CapAmount: '50元'
+      }, {
+        id: '非工作日',
+        timeFrame: '非繁忙时段',
+        PeriodOfFime: '19:00-次日',
+        FreeDuration: '60分钟',
+        Billing: '否',
+        Charges: '2元/小时',
+        CapAmount: '10元'
+      }, {
+        id: '非工作日',
+        timeFrame: '繁忙时段',
+        PeriodOfFime: '9:00-19:00',
+        FreeDuration: '30分钟',
+        Billing: '是',
+        Charges: '5元/30分钟',
+        CapAmount: '50元'
+      }, {
+        id: '非工作日',
+        timeFrame: '非繁忙时段',
+        PeriodOfFime: '19:00-次日',
+        FreeDuration: '60分钟',
+        Billing: '否',
+        Charges: '2元/小时',
+        CapAmount: '10元'
+      }],
+      tableData2: [{
+        id: '工作日',
+        timeFrame: '收费时间段',
+        FreeDuration: '30分钟',
+        Billing: '是',
+        Charges: '5元/30分钟',
+        CapAmount: '50元'
+      }, {
+        id: '非工作日',
+        timeFrame: '免费时间段',
+        PeriodOfFime: '19:00-次日',
+        FreeDuration: '60分钟',
+        Billing: '',
+        Charges: '',
+        CapAmount: ''
+      }, {
+        id: '非工作日',
+        timeFrame: '收费时间段',
+        PeriodOfFime: '9:00-19:00',
+        FreeDuration: '30分钟',
+        Billing: '是',
+        Charges: '5元/30分钟',
+        CapAmount: '50元'
+      }, {
+        id: '非工作日',
+        timeFrame: '免费时间段',
+        PeriodOfFime: '19:00-次日',
+        FreeDuration: '60分钟',
+        Billing: '',
+        Charges: '',
+        CapAmount: ''
+      }],
+      tableData3: [{
+        id: '工作日',
+        timeFrame: '收费时间段',
+        FreeDuration: '30分钟',
+        Billing: '是',
+        Charges: '5元/30分钟',
+        CapAmount: '50元'
+      }, {
+        id: '非工作日',
+        timeFrame: '禁停时间段',
+        PeriodOfFime: '19:00-次日',
+        FreeDuration: '60分钟',
+        Billing: '',
+        Charges: '',
+        CapAmount: ''
+      }, {
+        id: '非工作日',
+        timeFrame: '收费时间段',
+        PeriodOfFime: '9:00-19:00',
+        FreeDuration: '30分钟',
+        Billing: '是',
+        Charges: '5元/30分钟',
+        CapAmount: '50元'
+      }, {
+        id: '非工作日',
+        timeFrame: '禁停时间段',
+        PeriodOfFime: '19:00-次日',
+        FreeDuration: '60分钟',
+        Billing: '',
+        Charges: '',
+        CapAmount: ''
+      }]
     };
   },
   methods: {
@@ -214,30 +658,53 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    //搜索框查询
-    queryRoad() {
-      location.href = "/road/toSearch?searchText=" + this.param.searchContent;
+    //重置
+    clear() {
+      this.param.pageNum = 1;
+      this.param.pageSize = 5;
+      this.param = {};
+      this.searchRoad();
+    },
+    //禁用、恢复功能
+    Disabled(param) {
+      this.$confirm('是否真的禁用该用户?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        road.Disabled(param).then(res => {
+          if (res.data == 0) {
+            this.$message.success("恢复成功");
+          } else {
+            this.$message.error("禁用成功");
+          }
+          this.searchRoad();
+        })
+      });
     },
     //显示添加页面
     showAddDialog() {
+      this.addRoadForm = {};
       this.addDialogVisible = true;
-      this.$refs.addRoadFormRef.resetFields(); //清空表单
     },
     //显示修改页面
     showEditDialog(row) {
       this.editDialogVisible = true;
-      this.editRoadForm.id = row.id;
-      this.editRoadForm.timeType = row.timeType;
-      this.editRoadForm.freeDuration = row.freeDuration;
-      this.editRoadForm.billFreeDuration = row.billFreeDuration;
-      this.editRoadForm.chargeRate = row.chargeRate;
-      //根据用户id查询角色ID
-      this.queryRoleByUserId(row.id);
+      //this.findByChargeId(row);
+      let obj = {};
+      Object.assign(obj, row);
+      this.editRoadForm = obj;
     },
     //添加路段信息
-    addUser() {
+    addRoad() {
+      for (const inspector of this.addRoadForm.inspector) {
+        this.addRoadForm.inspectorId = inspector.id
+      }
+      for (const operator of this.addRoadForm.operator) {
+        this.addRoadForm.operatorId = operator.id
+      }
       this.$axios.post('/road/add', this.addRoadForm).then(res => {
-        if (res.data.code == 200) {
+        if (res.code == 200) {
           this.$message.success("添加成功");
           this.addDialogVisible = false;
         } else {
@@ -245,40 +712,37 @@ export default {
         }
       })
     },
-    //退出添加
-    addRoadFormClose() {
-      this.$refs.addRoadFormRef.resetFields();
-      this.addRoadForm.deptId = "";
-      this.addRoadForm.roleIds = [];
-    },
-    //编辑信息
-    editUser() {
-      this.$axios.post("/road/updateManager", this.editRoadForm).then(res => {
-        if (res.data.code == 200) {
-          this.editDialogVisible = false;
-          this.$message({
-            message: '修改成功',
-            type: 'success'
-          });
-        } else {
-          this.$message.error(res.data.message);
-        }
+    //编辑路段信息
+    editRoad() {
+      road.editRoad(this.editRoadForm).then(res=>{
+        this.$message({message: '修改成功', type: 'success'});
+        this.editDialogVisible = false;
+        this.searchRoad();
       })
-    },
-    //退出编辑
-    editUserFormClose() {
-      this.$refs.editUserFormRef.resetFields();
-      this.editRoadForm.deptId = "";
-      this.editRoadForm.roleIds = [];
     },
     //删除
     removeRoad(id) {
-
+      this.$confirm(`是否确定删除这条数据?`, '确认?', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        //调用后台服务器删除
+        axios.delete('/road/delete/' + id).then(res => {
+          if (res.code == 200) {
+            this.$message.success(`成功删除`);
+          } else {
+            this.$message({type: 'info', message: '已取消删除'});
+          }
+        }).finally(() => {
+          this.searchRoad();
+        });
+      })
     },
-    //查询路段
+    //分页查询路段
     searchRoad() {
       road.findByPage(this.pageNum, this.pageSize, this.param).then(res => {
-        console.log({}, res)
+        console.log('分页:', res)
         this.roadList = res.data.records
         this.total = res.data.total
       })
@@ -290,14 +754,79 @@ export default {
     handleCurrentChange(now) {
       this.pageNum = now;
       this.searchRoad();
+    },
+    //远程加载(地区)
+    remoteMethod(name) {
+      this.loading = true;
+      axios.get(`/china/findsByName?name=${name}`).then(res => {
+        //停止加载
+        this.loading = false;
+        this.options = res;
+      });
+    },
+    //远程加载(巡检员)
+    remoteInspector(inspectorName) {
+      this.loading = true;
+      axios.get(`/inspector/findByInspectorName?inspectorName=${inspectorName}`)
+          .then(res => {
+            console.log('巡检员:', res);
+            //停止加载
+            this.loading = false;
+            this.inspectors = res;
+          });
+    },
+    //远程加载(运维员)
+    remoteOperator(operatorName) {
+      this.loading = true;
+      axios.get(`/operator/findByOperatorName?operatorName=${operatorName}`)
+          .then(res => {
+            //停止加载
+            this.loading = false;
+            this.operators = res;
+          });
+    },
+    //查询收费规则
+    selectCharge() {
+      axios.get("/charge/findByCid").then(res => {
+        this.chargingRules = res.data;
+      })
+    },
+    //通过id查询规则
+    findByChargeId(row) {
+      axios.get(`/charge/findByChargeId/${row.chargeId}`).then(res => {
+        console.log("查询结果：", res);
+        this.editRoadForm = res.data[0];
+        this.editRoadForm2 = res.data[1];
+      })
     }
   },
   created() {
     this.searchRoad();
+    this.selectCharge();
   }
 }
 </script>
 
 <style scoped>
+
+.edit-dialog {
+  border-radius: 8px;
+}
+
+.form-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.form-left,
+.form-right {
+  width: 45%;
+  padding: 0 10px;
+}
+
+.dialog-footer {
+  text-align: right;
+}
 
 </style>

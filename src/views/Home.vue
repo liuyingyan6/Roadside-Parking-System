@@ -64,6 +64,7 @@
         </el-container>
     </el-container>
 </template>
+
 <script>
     import urlPermission from '@/api/urlPermission'
 

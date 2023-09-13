@@ -5,6 +5,9 @@ import Home from '@/views/Home'
 import Role from '@/views/permission/Role'
 import Car from "@/views/basic/Car";
 import Road from "@/views/road/Road";
+import User from "@/views/basic/User";
+import Parking from "@/views/road/Parking";
+import Magnetometer from "@/views/device/Magnetometer";
 
 Vue.use(VueRouter)
 
@@ -30,15 +33,30 @@ const routes = [
                 component: Role
             },
             {
+                path: '/user',
+                name: "User",
+                component: User
+            },
+            {
                 path: '/car',
                 name: "Car",
                 component: Car
+            },
+            {
+                path: '/magnetometer',
+                name: "Magnetometer",
+                component: Magnetometer
             },
             {
                 path: '/road',
                 name: "Road",
                 component: Road
             },
+            {
+                path: '/parking',
+                name: "Parking",
+                component: Parking
+            }
         ]
     }
 ]
