@@ -19,7 +19,7 @@ import CarOrder from "@/views/permission/CarOrder";
 import Road from "@/views/road/Road";
 import Parking from "@/views/road/Parking";
 import ThirdParty from "@/views/permission/ThirdParty.vue";
-
+import RealTimeRoadStatus from "@/views/road/RealTimeRoadStatus.vue";
 import UserFeedback from "@/views/feedback/UserFeedback";
 import InspectorFeedback from "@/views/feedback/InspectorFeedback";
 import InspectorFeedbackDetail from "@/views/feedback/InspectorFeedbackDetail";
@@ -36,11 +36,6 @@ Vue.use(VueRouter)
 const routes = [
     {
         path: '/',
-        name: 'Login',
-        component: Login
-    },
-    {
-        path: '/login',
         name: 'Login',
         component: Login
     },
@@ -69,11 +64,6 @@ const routes = [
                 path: '/car',
                 name: "Car",
                 component: Car
-            },
-            {
-                path: '/manager',
-                name: "ManagerAccount",
-                component: () => import('@/views/permission/ManagerAccount'),
             },
             {
                 path: '/inspector',
@@ -203,24 +193,18 @@ const routes = [
                 component: Payment
             },
             {
-                path: '/information',
-                name: 'Information',
-                component: () => import('@/views/sys/Information'),
-            },
-
-            {
-                path: '/userFeedback',
-                name: 'UserFeedback',
-                component: () => import('@/views/feedback/UserFeedback'),
-            },
-            {
                 path: '/userFeedbackDetails',
                 name: 'UserFeedbackDetails',
                 component: () => import('@/views/feedback/UserFeedbackDetails'),
             }
 
         ]
-    }
+    },
+    {
+        path: '/realTimeRoadStatus',
+        name: "RealTimeRoadStatus",
+        component: RealTimeRoadStatus
+    },
 ]
 
 const router = new VueRouter({
