@@ -10,16 +10,16 @@ export default {
     },
     Disabled(param) {
         return request({
-            url: `/road/update`,
+            url: `/road/disableRoad`,
             method: 'put',
             data: param
         })
     },
-    parkingCount(id){
+    editRoad(road){
         return request({
-            url:`/parking/count/${pageNum}/${pageSize}`,
-            method:'get',
-            data:param
+            url: `/road/update`,
+            method: 'put',
+            data: road
         })
     }
 }

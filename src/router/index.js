@@ -30,6 +30,7 @@ import Revenue from "@/views/statistics/Revenue.vue";
 import Attendance from "@/views/statistics/Attendance.vue";
 import Payment from "@/views/statistics/Payment";
 import Home from "@/views/sys/Home";
+import RoadStatistics from "@/views/statistics/RoadStatistics";
 
 Vue.use(VueRouter)
 
@@ -217,6 +218,11 @@ const routes = [
                 path: '/userFeedbackDetails',
                 name: 'UserFeedbackDetails',
                 component: () => import('@/views/feedback/UserFeedbackDetails'),
+            },
+            {
+                path:'/roadStatistics',
+                name: "RoadStatistics",
+                component: RoadStatistics
             }
 
         ]
