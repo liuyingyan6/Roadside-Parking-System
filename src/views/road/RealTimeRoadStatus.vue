@@ -1,119 +1,117 @@
 <script>
-import AMapLoader from '@amap/amap-jsapi-loader';
-import {shallowRef} from '@vue/reactivity'
+    import AMapLoader from '@amap/amap-jsapi-loader';
+    import {shallowRef} from '@vue/reactivity'
 
-export default {
-  name: "RealTimeRoadStatus",
-  data() {
-    return {
-      //此处不声明 map 对象，可以直接使用 this.map赋值或者采用非响应式的普通对象来存储。
-      map: null,
-      tableData: [
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1517 弄'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1519 弄'
-        }, {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1516 弄'
-        }]
+    export default {
+        name: "RealTimeRoadStatus",
+        data() {
+            return {
+                //此处不声明 map 对象，可以直接使用 this.map赋值或者采用非响应式的普通对象来存储。
+                map: null,
+                roads: [],
+                road: {}
+            }
+        },
+        methods: {
+            initMap() {
+                AMapLoader.load({
+                    key: "ace4630b9d878081625f1cce8dd1d325",
+                    version: "2.0",
+                    plugins: [''],
+                }).then((AMap) => {
+                    this.map = new AMap.Map("container", {
+                        viewMode: "3D",
+                        zoom: 13,
+                        center: [113.38893976806638, 23.18380156289729],
+                    });
+
+                    let markers = [];
+                    for (let i = 0; i < this.roads.length; i++) {
+                        let road = this.roads[i];
+                        let marker = new AMap.Marker({
+                            map: this.map,
+                            position: road.position,
+                            extData: i,
+                        });
+                        markers.push(marker);
+                        marker.on('click', () => {
+                            this.handleMarkerClick(marker.getExtData());
+                        });
+                    }
+                }).catch(e => {
+                    console.log(e);
+                })
+            },
+            handleMarkerClick(extData) {
+                this.road = this.roads[extData];
+            },
+            initRoads() {
+                this.roads = [
+                    {
+                        name: '广东路',
+                        parkingCount: 50,
+                        busyParkingCount: 35,
+                        inspectorName: 'A巡检员',
+                        inspectorPhone: '13398760893',
+                        position: [113.39893976806638, 23.18380156289729],
+                    },
+                    {
+                        name: '南天路',
+                        parkingCount: 100,
+                        busyParkingCount: 67,
+                        inspectorName: 'B巡检员',
+                        inspectorPhone: '13399434982',
+                        position: [113.37893976806638, 23.18380156289729],
+                    },
+                    {
+                        name: '东山路',
+                        parkingCount: 80,
+                        busyParkingCount: 33,
+                        inspectorName: 'C巡检员',
+                        inspectorPhone: '15576760982',
+                        position: [113.38893976806638, 23.18380156289729],
+                    }
+                ]
+            },
+        },
+        created() {
+            this.initRoads();
+        },
+        mounted() {
+            //DOM初始化完成进行地图初始化
+            this.initMap();
+        },
+        setup() {
+            const map = shallowRef(null);
+            return {
+                map,
+            }
+        },
     }
-  },
-  methods: {
-    initMap() {
-      AMapLoader.load({
-        key: "ace4630b9d878081625f1cce8dd1d325", // 申请好的Web端开发者Key，首次调用 load 时必填
-        version: "2.0", // 指定要加载的 JSAPI 的版本，缺省时默认为 1.4.15
-        plugins: [''], // 需要使用的的插件列表，如比例尺'AMap.Scale'等
-      }).then((AMap) => {
-        this.map = new AMap.Map("container", {  //设置地图容器id
-          viewMode: "3D",    //是否为3D地图模式
-          zoom: 13,           //初始化地图级别
-          center: [113.38893976806638, 23.18380156289729], //初始化地图中心点位置
-        });
-
-        let markers = [];
-        let positions = [
-          [113.39893976806638, 23.18380156289729],
-          [113.37893976806638, 23.18380156289729],
-          [113.38893976806638, 23.18380156289729],
-        ];
-
-        for (let i = 0, marker; i < positions.length; i++) {
-          marker = new AMap.Marker({
-            map: this.map,
-            position: positions[i],
-            extData: i, // 添加一个自定义属性，用于区分不同的marker
-          });
-          markers.push(marker);
-          marker.on('click', () => {
-            this.handleMarkerClick(marker.getExtData());
-          });
-        }
-
-      }).catch(e => {
-        console.log(e);
-      })
-    },
-    handleMarkerClick(extData) {
-      console.log(extData);
-    }
-  },
-  mounted() {
-    //DOM初始化完成进行地图初始化
-    this.initMap();
-  },
-  setup() {
-    const map = shallowRef(null);
-    return {
-      map,
-    }
-  },
-}
 
 
 </script>
 
 <template>
-  <div style="display: flex;">
-    <div>
-      <el-table
-          :data="tableData"
-          style="width: 100%">
-        <el-table-column
-            prop="date"
-            label="日期"
-            width="180">
-        </el-table-column>
-        <el-table-column
-            prop="name"
-            label="姓名"
-            width="180">
-        </el-table-column>
-        <el-table-column
-            prop="address"
-            label="地址">
-        </el-table-column>
-      </el-table>
+    <div style="display: flex;">
+        <div style="display: inline-block;width: 600px;">
+            <el-descriptions title="路段信息">
+                <el-descriptions-item label="路段名称">{{road.name}}</el-descriptions-item>
+                <el-descriptions-item label="车位数量">{{road.parkingCount}}</el-descriptions-item>
+                <el-descriptions-item label="使用中车位数量">{{road.busyParkingCount}}</el-descriptions-item>
+                <el-descriptions-item label="巡检员姓名">{{road.inspectorName}}</el-descriptions-item>
+                <el-descriptions-item label="巡检员电话">{{road.inspectorPhone}}</el-descriptions-item>
+            </el-descriptions>
+        </div>
+        <div id="container" style="display: inline-block;"></div>
     </div>
-    <div id="container" style="display: inline-block;"></div>
-  </div>
 </template>
 
 <style scoped lang="less">
-#container {
-  padding: 0px;
-  margin: 0px;
-  width: 100%;
-  height: 800px;
-}
+    #container {
+        padding: 0px;
+        margin: 0px;
+        width: 100%;
+        height: 800px;
+    }
 </style>

@@ -196,14 +196,14 @@ const routes = [
                 path: '/userFeedbackDetails',
                 name: 'UserFeedbackDetails',
                 component: () => import('@/views/feedback/UserFeedbackDetails'),
-            }
+            },
+            {
+                path: '/realTimeRoadStatus',
+                name: "RealTimeRoadStatus",
+                component: RealTimeRoadStatus
+            },
 
         ]
-    },
-    {
-        path: '/realTimeRoadStatus',
-        name: "RealTimeRoadStatus",
-        component: RealTimeRoadStatus
     },
 ]
 
