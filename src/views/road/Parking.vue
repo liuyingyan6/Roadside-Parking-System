@@ -242,16 +242,12 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        //调用后台服务器删除
         axios.delete('/parking/delete/' + id).then(res => {
-          if (res.code == 200) {
-            this.$message.success('成功删除');
-            this.pageNum = 1;
-            this.searchPark();
-          } else {
-            this.$message.error('已取消删除');
-          }
+          this.$message.success("删除成功");
+          this.searchPark();
         })
+      }).catch(() => {
+        this.$message.info('已取消删除');
       });
     },
     //查询车位

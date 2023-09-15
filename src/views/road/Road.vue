@@ -729,15 +729,12 @@ export default {
       }).then(() => {
         //调用后台服务器删除
         axios.delete('/road/delete/' + id).then(res => {
-          if (res.code == 200) {
-            this.$message.success(`成功删除`);
-          } else {
-            this.$message({type: 'info', message: '已取消删除'});
-          }
-        }).finally(() => {
+          this.$message.success("删除成功");
           this.searchRoad();
-        });
-      })
+        })
+      }).catch(() => {
+        this.$message.info('已取消删除');
+      });
     },
     //分页查询路段
     searchRoad() {
