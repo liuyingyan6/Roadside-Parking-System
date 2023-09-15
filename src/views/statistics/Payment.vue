@@ -13,23 +13,23 @@
 
         <!--时间选择-->
         <el-form :inline="true">
-        <el-row :gutter="20">
-            <el-form-item label="时间选择">
-                <el-date-picker
-                        v-model="choiceTime"
-                        type="datetimerange"
-                        :picker-options="pickerOptions"
-                        range-separator="至"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期"
-                        align="right">
-                </el-date-picker>
-            </el-form-item>
-            <el-form-item>
-                <el-button type="primary" icon="el-icon-search" @click="allDate">查询</el-button>
-                <el-button type="primary" icon="el-icon-search" @click="resetKeyword">重置</el-button>
-            </el-form-item>
-        </el-row>
+            <el-row :gutter="20">
+                <el-form-item label="时间选择">
+                    <el-date-picker
+                            v-model="choiceTime"
+                            type="datetimerange"
+                            :picker-options="pickerOptions"
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期"
+                            align="right">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" icon="el-icon-search" @click="allDate">查询</el-button>
+                    <el-button type="primary" icon="el-icon-search" @click="resetKeyword">重置</el-button>
+                </el-form-item>
+            </el-row>
         </el-form>
 
         <!--统计金额-->
@@ -96,46 +96,18 @@
 
         <!--表单-->
         <el-row>
-            <el-table
-                    :data="tableData"
-                    tooltip-effect="dark"
-                    style="width: 100%; text-align: center; font-size: 18px">
-                <el-table-column
-                        prop="orderDate"
-                        label="日期"
-                        width="200">
-                </el-table-column>
-                <el-table-column
-                        prop="alipayCountDate"
-                        label="支付宝支付数量"
-                        width="200">
-                </el-table-column>
-                <el-table-column
-                        prop="wechatCountDate"
-                        label="微信支付数量"
-                        width="200">
-                </el-table-column>
-                <el-table-column
-                        prop="cashCountDate"
-                        label="现金支付数量"
-                        width="200">
-                </el-table-column>
-                <el-table-column
-                        prop="alipayAmountDate"
-                        label="支付宝收款金额"
-                        width="200">
-                </el-table-column>
-                <el-table-column
-                        prop="wechatAmountDate"
-                        label="微信收款金额"
-                        width="200">
-                </el-table-column>
-                <el-table-column
-                        prop="cashAmountDate"
-                        label="现金收款金额"
-                        width="200">
-                </el-table-column>
-            </el-table>
+            <div class="table-container">
+                <el-table :data="tableData" tooltip-effect="dark"
+                          style="width: 100%; text-align: center; font-size: 18px">
+                    <el-table-column prop="orderDate" label="日期"></el-table-column>
+                    <el-table-column prop="alipayCountDate" label="支付宝支付数量"></el-table-column>
+                    <el-table-column prop="wechatCountDate" label="微信支付数量"></el-table-column>
+                    <el-table-column prop="cashCountDate" label="现金支付数量"></el-table-column>
+                    <el-table-column prop="alipayAmountDate" label="支付宝收款金额"></el-table-column>
+                    <el-table-column prop="wechatAmountDate" label="微信收款金额"></el-table-column>
+                    <el-table-column prop="cashAmountDate" label="现金收款金额"></el-table-column>
+                </el-table>
+
 
             <!--分页组件-->
             <el-pagination
@@ -147,6 +119,7 @@
                     layout="total, sizes, prev, pager, next, jumper"
                     :total="total"
             ></el-pagination>
+            </div>
         </el-row>
 
     </div>
@@ -170,8 +143,8 @@
                 total: 0,
                 formLabelWidth: '120px',
                 // 默认时间选择
-                choiceTime: [new Date(2023, 8-1, 1, 9, 10),
-                             new Date(2023, 9-1, 9, 9, 10)],
+                choiceTime: [new Date(2023, 8 - 1, 1, 9, 10),
+                    new Date(2023, 9 - 1, 9, 9, 10)],
 
                 // 快捷时间选择
                 pickerOptions: {
@@ -206,34 +179,34 @@
                 },
                 // 表单数据
                 tableData: [],
-                alipayCount : 0,
-                wechatCount : 0,
-                cashCount : 0,
-                alipayAmount : 0,
-                wechatAmount : 0,
-                cashAmount : 0
+                alipayCount: 0,
+                wechatCount: 0,
+                cashCount: 0,
+                alipayAmount: 0,
+                wechatAmount: 0,
+                cashAmount: 0
             }
         },
 
         methods: {
 
-            allDate(){
+            allDate() {
                 this.findPayDate()
                 this.findCountDate()
             },
 
-            findCountDate(){
+            findCountDate() {
                 const startTime = moment(this.choiceTime[0]).format('YYYY-MM-DD HH:mm:ss');
                 const endTime = moment(this.choiceTime[1]).format('YYYY-MM-DD HH:mm:ss');
-                axios.get("/order/payCount",{
+                axios.get("/order/payCount", {
                     params: {
                         startTime: startTime,
                         endTime: endTime
                     }
                 }).then(res => {
                     console.log(res)
-                    this.pieChartData1 = [res.data.alipayCount,res.data.wechatCount,res.data.cashCount];
-                    this.pieChartData2 = [res.data.alipayAmount,res.data.wechatAmount,res.data.cashAmount];
+                    this.pieChartData1 = [res.data.alipayCount, res.data.wechatCount, res.data.cashCount];
+                    this.pieChartData2 = [res.data.alipayAmount, res.data.wechatAmount, res.data.cashAmount];
                     this.alipayCount = res.data.alipayCount
                     this.wechatCount = res.data.wechatCount
                     this.cashCount = res.data.cashCount
@@ -244,10 +217,10 @@
                 })
             },
 
-            findPayDate(){
+            findPayDate() {
                 const startTime = moment(this.choiceTime[0]).format('YYYY-MM-DD HH:mm:ss');
                 const endTime = moment(this.choiceTime[1]).format('YYYY-MM-DD HH:mm:ss');
-                axios.get("/order/payDate",{
+                axios.get("/order/payDate", {
                     params: {
                         startTime: startTime,
                         endTime: endTime,
@@ -275,9 +248,9 @@
                     series: [{
                         type: 'pie',
                         data: [
-                            { name: '支付宝', value: this.pieChartData1[0] },
-                            { name: '微信支付', value: this.pieChartData1[1] },
-                            { name: '现金支付', value: this.pieChartData1[2] },
+                            {name: '支付宝', value: this.pieChartData1[0]},
+                            {name: '微信支付', value: this.pieChartData1[1]},
+                            {name: '现金支付', value: this.pieChartData1[2]},
                         ],
                     }],
                 };
@@ -296,9 +269,9 @@
                     series: [{
                         type: 'pie',
                         data: [
-                            { name: '支付宝金额', value: this.pieChartData2[0] },
-                            { name: '微信金额', value: this.pieChartData2[1] },
-                            { name: '现金金额', value: this.pieChartData2[2] },
+                            {name: '支付宝金额', value: this.pieChartData2[0]},
+                            {name: '微信金额', value: this.pieChartData2[1]},
+                            {name: '现金金额', value: this.pieChartData2[2]},
                         ],
                     }],
                 };
@@ -331,4 +304,14 @@
 </script>
 
 <style scoped lang="less">
+    .table-container {
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+
+    .el-table {
+        width: 100%;
+        text-align: center;
+        font-size: 18px;
+    }
 </style>

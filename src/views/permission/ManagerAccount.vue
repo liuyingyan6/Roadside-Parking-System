@@ -67,10 +67,6 @@
                     <el-input v-model="addManagerForm.password"></el-input>
                 </el-form-item>
 
-                <el-form-item label="确认密码">
-                    <el-input v-model="addManagerForm.repassword"></el-input>
-                </el-form-item>
-
                 <el-form-item label="手机号码">
                     <el-input v-model="addManagerForm.telephone"></el-input>
                 </el-form-item>
@@ -119,10 +115,6 @@
 
                 <el-form-item label="密码">
                     <el-input v-model="editManagerForm.password"></el-input>
-                </el-form-item>
-
-                <el-form-item label="确认密码">
-                    <el-input v-model="editManagerForm.repassword"></el-input>
                 </el-form-item>
 
                 <el-form-item label="手机号码">
@@ -190,10 +182,10 @@
                             trigger: "blur"
                         }
                     ],
-                    repassword: [
-                        { required: true, message: "请确认密码", trigger: "blur" },
-                        { validator: this.validatePassword, trigger: "blur" }
-                    ],
+                    // repassword: [
+                    //     { required: true, message: "请确认密码", trigger: "blur" },
+                    //     { validator: this.validatePassword, trigger: "blur" }
+                    // ],
                     telephone: [
                         {required: true, message: "手机号码必填", trigger: "blur"}
                     ]

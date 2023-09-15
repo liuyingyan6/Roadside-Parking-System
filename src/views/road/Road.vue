@@ -150,9 +150,9 @@
                 :loading="loading"
                 style="width: 300px">
               <el-option
-                  v-for="operator in operators"
-                  :label="operator.operatorName"
-                  :value="operator">
+                  v-for="or in operators"
+                  :label="or.operatorName"
+                  :value="or.id">
               </el-option>
             </el-select>
           </template>
@@ -761,7 +761,7 @@ export default {
       axios.get(`/china/findsByName?name=${name}`).then(res => {
         //停止加载
         this.loading = false;
-        this.options = res;
+        this.options = res.data;
       });
     },
     //远程加载(巡检员)
@@ -772,7 +772,7 @@ export default {
             console.log('巡检员:', res);
             //停止加载
             this.loading = false;
-            this.inspectors = res;
+            this.inspectors = res.data;
           });
     },
     //远程加载(运维员)
@@ -781,8 +781,8 @@ export default {
       axios.get(`/operator/findByOperatorName?operatorName=${operatorName}`)
           .then(res => {
             //停止加载
+            this.operators = res.data;
             this.loading = false;
-            this.operators = res;
           });
     },
     //查询收费规则

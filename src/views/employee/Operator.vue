@@ -195,22 +195,23 @@
             </div>
         </el-dialog>
 
+
         <!--编辑对话框-->
         <el-dialog title="编辑运维人员" :visible.sync="editDialogVisible" width="500px">
             <!--添加表单-->
-            <el-form label-width="120px" :model="formData" ref="form">
+            <el-form label-width="120px" :model="editData" ref="form">
 
                 <el-form-item label="运维员名称" :label-width="formLabelWidth" prop="operatorName">
-                    <el-input v-model="formData.operatorName" :disabled="isOperatorNameDisabled" autocomplete="off" style="width: 300px"></el-input>
+                    <el-input v-model="editData.operatorName" :disabled="isOperatorNameDisabled" autocomplete="off" style="width: 300px"></el-input>
                 </el-form-item>
 
                 <el-form-item label="手机号码" :label-width="formLabelWidth" prop="phone">
-                    <el-input v-model="formData.phone" autocomplete="off" style="width: 300px"></el-input>
+                    <el-input v-model="editData.phone" autocomplete="off" style="width: 300px"></el-input>
                 </el-form-item>
 
                 <el-form-item label="绑定泊位" :label-width="formLabelWidth" prop="names">
                     <el-select
-                            v-model="formData.nameList"
+                            v-model="editData.nameList"
                             multiple
                             filterable
                             allow-create
@@ -229,11 +230,11 @@
                 </el-form-item>
 
                 <el-form-item label="所属分区" :label-width="formLabelWidth" prop="area">
-                    <el-input v-model="formData.area" autocomplete="off" style="width: 300px"></el-input>
+                    <el-input v-model="editData.area" autocomplete="off" style="width: 300px"></el-input>
                 </el-form-item>
 
                 <el-form-item label="状态" :label-width="formLabelWidth" prop="state" value-key="value">
-                    <el-select v-model="formData.state" style="width: 300px">
+                    <el-select v-model="editData.state" style="width: 300px">
                         <el-option label="正常" :value="0"></el-option>
                         <el-option label="禁用" :value="1"></el-option>
                     </el-select>
@@ -262,6 +263,7 @@
                 dialogFormVisible: false,
                 // 新增对话框数据
                 formData: {},
+                editData: {},
                 // 分页查询提交的参数
                 param: {},
                 // 显示的属性
@@ -318,7 +320,7 @@
 
             showEditDialog(row){
                 this.getroadData();
-                this.formData = Object.assign({}, row); // 将当前行的数据赋给 formData 对象
+                this.editData = Object.assign({}, row); // 将当前行的数据赋给 formData 对象
                 this.editDialogVisible = true
             },
 
@@ -331,19 +333,20 @@
             // 查询添加中的下拉框
             getroadData(){
                 axios.get("/road/findRoad").then(res => {
+                    console.log(res)
                     this.roadData = res.data
                 })
             },
 
             addOperator(){
-                if (this.formData.operatorName) {
-                    console.log(this.formData)
-                    axios.put("/operator/update", this.formData)
+                if (this.editData.operatorName) {
+                    console.log("editData============",this.editData)
+                    axios.put("/operator/update", this.editData)
                         .then(resp => {
                             this.$message.success('修改成功')
                         }).finally(() => {
                         this.editDialogVisible = false;
-                        this.formData = {};
+                        this.editData = {};
                         this.findPage();
                     })
                 } else {

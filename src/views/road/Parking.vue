@@ -103,9 +103,9 @@
               style="width: 300px">
             <template slot="empty">无匹配数据</template>
             <el-option
-                v-for="item in optionsRoad"
-                :label="item.roadName"
-                :value="item.id">
+                v-for="ro in optionsRoad"
+                :label="ro.roadName"
+                :value="ro.id">
             </el-option>
           </el-select>
         </el-form-item>
@@ -139,7 +139,6 @@
 
 <script>
 import parking from "@/api/parking";
-import axios from "axios";
 
 export default {
   data() {
@@ -165,11 +164,12 @@ export default {
     },
     //远程加载(路段)
     remoteRoad(roadName) {
+      console.log(roadName)
       this.loading = true;
-      axios.get(`/road/findByRoadName?roadName=${roadName}`).then(res => {
+      this.$axios.get(`/road/findByRoadName?roadName=${roadName}`).then(res => {
         console.log('路段:', res);
+        this.optionsRoad = res.data;
         this.loading = false;
-        this.optionsRoad = res;
       });
     },
     //重置

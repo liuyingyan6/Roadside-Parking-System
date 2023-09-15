@@ -13,13 +13,13 @@
         <el-row>
             <el-card shadow="always">
 
-                <el-row>
-                    <el-form :inline="true">
-                        <el-form-item>
-                            <el-button type="success" class="align-right" @click="find">反馈处理</el-button>
-                        </el-form-item>
-                    </el-form>
-                </el-row>
+<!--                <el-row>-->
+<!--                    <el-form :inline="true">-->
+<!--                        <el-form-item>-->
+<!--                            <el-button type="success" class="align-right" @click="find">反馈处理</el-button>-->
+<!--                        </el-form-item>-->
+<!--                    </el-form>-->
+<!--                </el-row>-->
 
 
                 <el-descriptions icon="el-icon-search" title="基本信息" :column="2" border style="width: 80%;margin: auto;">
