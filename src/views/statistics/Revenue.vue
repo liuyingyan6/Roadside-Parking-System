@@ -305,7 +305,7 @@
             <el-form :inline="true">
                 <el-form-item label="路段选择" :label-width="formLabelWidth" prop="parkingId">
                     <el-select v-model="roadId" style="width: 300px">
-                        <el-option v-for="road in roads" :label="road.name"
+                        <el-option v-for="road in roads" :label="road.roadName"
                                    :value="road.id"></el-option>
                     </el-select>
                 </el-form-item>
@@ -405,32 +405,32 @@
                 <el-table-column
                         prop="date"
                         label="日期"
-                        width="120">
+                        >
                 </el-table-column> <!-- 日期 -->
                 <el-table-column
                         prop="orderCount"
                         label="订单数量"
-                        width="120">
+                        >
                 </el-table-column> <!-- 订单数量 -->
                 <el-table-column
                         prop="revenue"
                         label="营收额"
-                        width="120">
+                        >
                 </el-table-column> <!-- 营收额 -->
                 <el-table-column
                         prop="refundOrderCount"
                         label="退款订单"
-                        width="120">
+                        >
                 </el-table-column> <!-- 退款订单-->
                 <el-table-column
                         prop="refundAmount"
                         label="退款金额"
-                        width="120">
+                        >
                 </el-table-column> <!-- 退款金额-->
                 <el-table-column
                         prop="userIncreaseCount"
                         label="用户增长"
-                        width="120">
+                        >
                 </el-table-column> <!-- 用户增长-->
             </el-table> <!--表格展示订单信息-->
             <el-pagination style="margin-top: 15px"
@@ -448,5 +448,13 @@
 </template>
 
 <style scoped lang="less">
-
+    .table-container {
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+    .el-table {
+        width: 100%;
+        text-align: center;
+        font-size: 18px;
+    }
 </style>

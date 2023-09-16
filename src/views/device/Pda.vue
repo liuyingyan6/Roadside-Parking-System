@@ -292,6 +292,7 @@ export default {
       this.showDialog();
     }, // 编辑
     handleDelete(row) {
+      console.log("=================",row)
       this.$confirm(`此操作将删除${row.name}, 是否继续?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

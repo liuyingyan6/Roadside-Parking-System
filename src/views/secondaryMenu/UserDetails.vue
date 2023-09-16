@@ -1,298 +1,376 @@
 <template>
     <div>
-        <el-row :gutter="12" style="margin-bottom: 20px">
+        <el-row :gutter="24" style="margin-bottom: 20px">
+
             <el-card shadow="always">
-                <el-breadcrumb separator-class="el-icon-arrow-right">
-                    <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-                    <el-breadcrumb-item>基础信息管理</el-breadcrumb-item>
-                    <el-breadcrumb-item>用户管理</el-breadcrumb-item>
-                </el-breadcrumb>
+                <el-col :span="12">
+                    <el-breadcrumb separator-class="el-icon-arrow-right">
+                        <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+                    </el-breadcrumb>
+                </el-col>
+                <el-col :span="12" style="text-align: right;">
+                    <el-button type="info" @click="replacement">刷新</el-button>
+                    <el-button type="info">返回</el-button>
+                </el-col>
             </el-card>
         </el-row>
 
-
-        <br>
-        <br>
-
-        <!--  账户信息  -->
-        <h1>账户信息</h1>
-        <el-row>
-            <el-card shadow="always">
-                <!-- 车辆情况表单 -->
-                <el-table :data="userTableData" border stripe >
-                    <!-- 复选框 -->
-                    <el-table-column label="车辆绑定数量" prop="userName" width="200"> </el-table-column>
-                    <el-table-column label="订单数量 " prop="phone" width="200"></el-table-column>
-                    <el-table-column label="消费金额" prop="notOrderNum" width="200"></el-table-column>
-                    <el-table-column label="未交费订单" prop="createTime" width="200"></el-table-column>
-                    <el-table-column label="待缴费金额" prop="createTime" width="200"></el-table-column>
-                    <el-table-column  width="200"></el-table-column>
-                    <el-table-column  width="200"></el-table-column>
-                </el-table>
-            </el-card>
+        <!--   基础信息     -->
+        <el-row style="font-weight: bold; margin: 30px 40px">
+            <span style="color: #01b4ff; font-size: 22px">|</span> 基础信息
+        </el-row>
+        <el-row style="width: 90%;margin: auto">
+            <el-col :span="3" style="background: #f2f2f2">
+                <div class="demo-basic--circle">
+                    <div class="block" style="padding: 5px">
+                        <el-avatar :size="142" :src="user.url"></el-avatar>
+                    </div>
+                </div>
+            </el-col>
+            <el-col :span="21">
+                <el-descriptions :column="2" border>
+                    <el-descriptions-item label="id"><span style="line-height: 2.5;">{{user.id}}</span>
+                    </el-descriptions-item>
+                    <el-descriptions-item label="手机号码">{{user.phone}}</el-descriptions-item>
+                    <el-descriptions-item label="状态">
+                        <el-tag
+                                :type="user.vx === 1 ? 'success' : 'primary'"
+                                disable-transitions>{{user.vx == 1 ? "已绑定" : "未绑定"}}
+                        </el-tag>
+                    </el-descriptions-item>                    <el-descriptions-item label="状态">
+                        <el-tag
+                                :type="user.state === 1 ? 'success' : 'primary'"
+                                disable-transitions>{{user.state == 1 ? "正常" : "禁用"}}
+                        </el-tag>
+                    </el-descriptions-item>
+                    <el-descriptions-item label="注册时间">{{user.createTime}}</el-descriptions-item>
+                    <el-descriptions-item label="最近登录时间">{{user.createTime}}</el-descriptions-item>
+                </el-descriptions>
+            </el-col>
         </el-row>
 
-        <br>
-        <br>
-
-        <!--  车辆情况  -->
-        <h1>车辆情况</h1>
-        <el-row>
-            <el-card shadow="always">
-                <el-row>
-                    <el-form :inline="true" :model="carParam" >
-                        <el-form-item>
-                            <el-input v-model="carParam.carNum" placeholder="昵称"></el-input>
-                        </el-form-item>
-
-                        <el-form-item>
-                            <el-input v-model="carParam.carCreateTime" placeholder="手机号码"></el-input>
-                        </el-form-item>
-
-
-                        <el-form-item>
-                            <el-button type="primary" icon="el-icon-search" @click="carFindPage">查询</el-button>
-                        </el-form-item>
-
-                        <el-form-item>
-                            <el-button type="primary" icon="el-icon-delete" @click="carClear">重置</el-button>
-                        </el-form-item>
-                    </el-form>
-                </el-row>
-
-                <!-- 车辆情况表单 -->
-                <el-table :data="carTableData" border stripe >
-                    <!-- 复选框 -->
-                    <el-table-column label="车牌号码" prop="userName" width="200"> </el-table-column>
-                    <el-table-column label="车牌类型 " prop="phone" width="200"></el-table-column>
-                    <el-table-column label="订单数量" prop="carNum" width="200"></el-table-column>
-                    <el-table-column label="待缴费订单" prop="orderNum" width="200"></el-table-column>
-                    <el-table-column label="消费金额" prop="notOrderNum" width="200"></el-table-column>
-                    <el-table-column label="待缴费金额" prop="createTime" width="200"></el-table-column>
-                    <el-table-column label="绑定时间" prop="createTime" width="210"></el-table-column>
-                </el-table>
-
-                <!-- 分页组件 total总条数 page-size：每页大写 current-page 当前页码 page-sizes：下拉列表 page-size：页面大小 -->
-                <el-pagination style="margin-top: 15px"
-                               background
-                               @size-change="carHandleSizeChange"
-                               @current-change="carHandleCurrentChange"
-                               :current-page="carParam.pageNum"
-                               :page-sizes="[3, 5, 10, 20]"
-                               :page-size="carParam.pageSize"
-                               layout="total, sizes, prev, pager, next, jumper"
-                               :total="tableData.total">
-                </el-pagination>
-            </el-card>
+        <!--   账户信息     -->
+        <el-row style="font-weight: bold; margin: 30px 40px">
+            <span style="color: #01b4ff; font-size: 22px">|</span> 账户信息
         </el-row>
+        <el-descriptions style="width: 70%;margin: 45px 0px 30px 80px" direction="vertical" :column="5" border>
+            <el-descriptions-item label="车辆绑定数">{{this.user.carNum}}</el-descriptions-item>
+            <el-descriptions-item label="订单数量">{{this.user.orderNum}}</el-descriptions-item>
+            <el-descriptions-item label="消费金额">{{this.accountVO.expenseMoney}}</el-descriptions-item>
+            <el-descriptions-item label="未交费订单">{{this.user.notOrderNum}}</el-descriptions-item>
+            <el-descriptions-item label="待缴费金额">{{this.accountVO.notExpenseMoney}}</el-descriptions-item>
+        </el-descriptions>
 
-        <br>
-        <br>
-
-        <!--  订单记录  -->
-        <h1>订单记录</h1>
-        <el-row>
-
+        <!--   车辆情况     -->
+        <el-row style="font-weight: bold; margin: 30px 40px">
+            <span style="color: #01b4ff; font-size: 22px">|</span> 车辆情况
+        </el-row>
+        <el-row style="width: 90%;margin: auto">
             <el-card shadow="always">
-
-                <el-row>
-                    <el-form :inline="true" :model="orderParam" >
-                        <el-form-item>
-                            <el-input v-model="orderParam.userName" placeholder="订单编号"></el-input>
-                        </el-form-item>
-
-                        <el-form-item>
-                            <el-input v-model="orderParam.phone" placeholder="车牌号码"></el-input>
-                        </el-form-item>
+                <el-form :inline="true" :model="carParam">
+                    <el-form-item>
+                        <el-input v-model="carParam.carNumber" placeholder="车牌号码"></el-input>
+                    </el-form-item>
 
 
-                        <el-select v-model="orderParam.vx" placeholder="时间">
-                            <el-option label="已绑定" value="1"></el-option>
-                            <el-option label="未绑定" value="0"></el-option>
-                        </el-select>
-
-
-
-
-                        <el-select v-model="orderParam.state" placeholder="订单状态">
-                            <el-option label="正常" value="1"></el-option>
-                            <el-option label="禁用" value="0"></el-option>
-                        </el-select>
-
-
-                        <el-form-item>
-                            <el-button type="primary" icon="el-icon-search" @click="orderFindPage">查询</el-button>
-                        </el-form-item>
-
-                        <el-form-item>
-                            <el-button type="primary" icon="el-icon-delete" @click="orderClear">重置</el-button>
-                        </el-form-item>
-                    </el-form>
-                </el-row>
-
+<!--                    <el-form-item>-->
+<!--                        <el-date-picker-->
+<!--                                v-model="carParam.vx"-->
+<!--                                type="datetimerange"-->
+<!--                                start-placeholder="开始日期"-->
+<!--                                end-placeholder="结束日期"-->
+<!--                                value-format="yyyy-MM-dd HH:mm:ss">-->
+<!--                        </el-date-picker>-->
+<!--                    </el-form-item>-->
+                    <el-form-item>
+                        <el-button type="primary" icon="el-icon-search" @click="carConditionPage()">查询</el-button>
+                        <el-button @click="carClear()" type="info" plain icon="el-icon-refresh">重置</el-button>
+                    </el-form-item>
+                </el-form>
                 <!-- 表格 data：要绑定的数据  handleSelectionChange 多选的方法 -->
-                <el-table :data="orderTableData" border stripe >
-                    <el-table-column label="订单编号" prop="userName" width="200"> </el-table-column>
-                    <el-table-column label="提交时间 " prop="phone" width="200"></el-table-column>
-                    <el-table-column label="车牌号码" prop="carNum" width="200"></el-table-column>
-                    <el-table-column label="订单金额" prop="orderNum" width="200"></el-table-column>
-                    <el-table-column label="订单状态" prop="notOrderNum" width="200"></el-table-column>
-                    <el-table-column label="支付方式" prop="notOrderNum" width="200"></el-table-column>
-                    <el-table-column label="操作" width="380">
-                        <template slot-scope="scope">
-                            <el-button-group>
-                                <el-button
-                                        type="primary" icon="el-icon-view" plain
-                                        @click="orderHandleView(scope.$index,scope.row)">查看详情
-                                </el-button>
-                            </el-button-group>
-                        </template>
-                    </el-table-column>
-                </el-table>
+                <el-row>
+                    <el-table
+                            ref="multipleTable"
+                            :data="carData"
+                            tooltip-effect="dark"
+                            style="text-align: center;font-size: 18px">
 
-                <!-- 分页组件 total总条数 page-size：每页大写 current-page 当前页码 page-sizes：下拉列表 page-size：页面大小 -->
-                <el-pagination style="margin-top: 15px"
-                               background
-                               @size-change="orderHandleSizeChange"
-                               @current-change="orderHandleCurrentChange"
-                               :current-page="orderParam.pageNum"
-                               :page-sizes="[3, 5, 10, 20]"
-                               :page-size="orderParam.pageSize"
-                               layout="total, sizes, prev, pager, next, jumper"
-                               :total="orderTableData.total">
-                </el-pagination>
+                        <el-table-column
+                                prop="carNumber"
+                                label="车牌号码">
+                        </el-table-column>
+
+                        <el-table-column
+                                prop="carType"
+                                label="车牌类型">
+                        </el-table-column>
+                        <el-table-column
+                                prop="orderNum"
+                                label="订单数量">
+                        </el-table-column>
+                        <el-table-column
+                                prop="notPayOrder"
+                                label="待缴费订单">
+                        </el-table-column>
+                        <el-table-column
+                                prop="expenseMoney"
+                                label="消费金额">
+                        </el-table-column>
+                        <el-table-column
+                                prop="notExpenseMoney"
+                                label="待缴费金额">
+                        </el-table-column>
+                    </el-table>
+                    <el-pagination style="margin-top: 15px"
+                                   background
+                                   @size-change="carHandleSizeChange"
+                                   @current-change="carHandleCurrentChange"
+                                   :current-page="carPageNum"
+                                   :page-sizes="[3, 5, 10, 20]"
+                                   :page-size="carPageSize"
+                                   layout="total, sizes, prev, pager, next, jumper"
+                                   :total="carTotal">
+                    </el-pagination>
+                </el-row>
+            </el-card>
+        </el-row>
+
+        <!--   订单记录     -->
+        <el-row style="font-weight: bold;margin: 30px 40px 30px">
+            <span style="color: #01b4ff; font-size: 22px">|</span> 订单记录
+        </el-row>
+        <el-row style="width: 90%;margin: auto">
+            <el-card shadow="always">
+                <el-form :inline="true" :model="orderParam">
+                    <el-form-item>
+                        <el-input v-model="orderParam.orderNumber" placeholder="订单编号"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-input v-model="orderParam.carNumber" placeholder="车牌号码"></el-input>
+                    </el-form-item>
+<!--                    <el-form-item>-->
+<!--                        <el-date-picker-->
+<!--                                v-model="param.timeHorizon"-->
+<!--                                type="datetimerange"-->
+<!--                                start-placeholder="开始日期"-->
+<!--                                end-placeholder="结束日期"-->
+<!--                                value-format="yyyy-MM-dd HH:mm:ss">-->
+<!--                        </el-date-picker>-->
+<!--                    </el-form-item>-->
+                    <el-form-item>
+                        <el-select v-model="orderParam.status" placeholder="状态">
+                            <el-option
+                                    v-for="o  in orderState"
+                                    :key="o.id"
+                                    :label="o.state"
+                                    :value="o.id">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" icon="el-icon-search" @click="orderRecordPage">查询</el-button>
+                        <el-button @click="orderClear()" type="info" plain icon="el-icon-refresh">重置</el-button>
+                    </el-form-item>
+                </el-form>
+                <!-- 表格 data：要绑定的数据  handleSelectionChange 多选的方法 -->
+                <el-row>
+                    <el-table
+                            :data="orderData"
+                            tooltip-effect="dark"
+                            style="text-align: center;font-size: 18px">
+
+                        <el-table-column
+                                prop="orderNumber"
+                                label="订单编号">
+                        </el-table-column>
+
+                        <el-table-column
+                                prop="updateTime"
+                                label="提交时间"
+                                width="250">
+                        </el-table-column>
+                        <el-table-column
+                                prop="carNumber"
+                                label="车牌号码">
+                        </el-table-column>
+                        <el-table-column
+                                prop="orderAmount"
+                                label="订单金额">
+                        </el-table-column>
+                        <el-table-column
+                                prop="status"
+                                label="订单状态">
+                            <template slot-scope="scope">
+                                <el-tag
+                                        :type="scope.row.status === 2 ? 'success': (scope.row.status == 4 ? 'danger' : 'primary' )"
+                                        disable-transitions>{{scope.row.status == 2 ? "已支付": (scope.row.status == 4 ?
+                                    "已退款" : "进行中" )}}
+                                </el-tag>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                prop="payType"
+                                label="支付方式">
+                            <template slot-scope="scope">
+                                <el-tag
+                                        :type="scope.row.payType === 0 ? 'primary' : 'success'"
+                                        disable-transitions>{{scope.row.payType == 0 ? "支付宝支付" : "微信支付"}}
+                                </el-tag>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="操作">
+                            <el-button
+                                    type="primary" icon="el-icon-view" plain
+                                    @click="handleView(scope.row)">查看详情
+                            </el-button>
+                        </el-table-column>
+                    </el-table>
+                    <el-pagination style="margin-top: 15px"
+                                   background
+                                   @size-change="orderHandleSizeChange"
+                                   @current-change="orderHandleCurrentChange"
+                                   :current-page="orderPageNum"
+                                   :page-sizes="[3, 5, 10, 20]"
+                                   :page-size="orderPageSize"
+                                   layout="total, sizes, prev, pager, next, jumper"
+                                   :total="orderTotal">
+                    </el-pagination>
+                </el-row>
             </el-card>
         </el-row>
     </div>
-</template>
-<script>
 
-    import user from '@/api/user'
+</template>
+
+<style scoped>
+    .el-breadcrumb {
+        font-size: 22px;
+        line-height: 2;
+    }
+
+    .el-descriptions {
+        font-size: 16px;
+    }
+
+    .el-descriptions-item__label.is-bordered-label {
+        background: #f2f2f2;
+    }
+</style>
+
+<script>
+    import userDetails from "@/api/userDetails";
+
     export default {
         data() {
             return {
-
-                courseId:'',
-                //车辆情况分页查询提交的参数
-                carParam: {
-
-                },
-                //订单记录分页查询提交的参数
-                orderParam:{
-
-                },
+                user: {},
+                //订单记录绑定
+                orderParam:{},
+                orderData: [],
+                orderPageNum: 1,
+                orderPageSize: 5,
+                orderTotal: 0,
+                //车辆情况绑定
+                carParam: {},
+                carData: [],
+                carPageNum: 1,
+                carPageSize: 5,
+                carTotal: 0,
                 //账户信息表单绑定
-                userTableData:{},
-                //订单记录表单绑定
-                orderTableData:{},
-                //车辆情况表单绑定
-                carTableData:{},
-                //显示的属性
-                tableData: {},
-                //复选框
-                multipleSelection: [],
-                pageNum: 1,
-                pageSize: 5,
-                state:[],
+                accountVO: {},
+
+                orderState: [
+                    {id: 2, state: "已支付"},
+                    {id: 4, state: "已退款"},
+                    {id: 6, state: "进行中"},
+                ],
             }
         },
         methods: {
-            //账户信息分页
-            userFindPage(){
-
-            },
-            //车辆情况查询按钮
-            carFindPage(){
-
-            },
-            //车辆情况重置按钮
-            carClear(){
-
-            },
-
-            //分页查询所有用户
-            findPage() {
-                user.findPage(this.pageNum,this.pageSize,this.param).then(res => {
-                    console.log("", res);
-                    this.total = res.data.total;
-                    this.tableData = res.data.records;
+            //账户信息
+            accountPage(){
+                userDetails.accountPage(this.user.id).then(res=>{
+                    this.accountVO = res.data;
                 })
             },
 
-            //禁用
-            removeRoleById(row) {
-                this.$confirm('是否真的禁用该用户?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    user.removeRoleById(row).then(res=>{
-                        console.log(res)
-                        if (res.data == 0) {
-                            this.$message.error("禁用成功");
-
-                        } else {
-                            this.$message.success("恢复成功");
-
-                        }
-                        this.findPage();// 刷新表单数据
-                    })
-                });
+            //车辆情况分页
+            carConditionPage(){
+                userDetails.carConditionPage(this.carPageNum,this.carPageSize,this.user.id,this.carParam).then(res=>{
+                    console.log("-----"+res)
+                    this.carData = res.data.records;
+                    this.carTotal = res.data.total;
+                })
             },
+            //车辆情况查询
+            carSelect(){
 
-            // 重置按钮
-            clear(){
-                this.param.pageNum = 1;
-                this.param.pageSize = 5;
-                this.param = {};
-                this.findPage();
             },
+            //车辆情况重置
+            carClear(){
+                this.carParam = {};
+                this.carConditionPage();
+            },
+            //车辆情况分页
+            carHandleSizeChange(val) {
+                this.carPageSize = val;
+                this.carConditionPage();
 
-            //复选框的方法
-            handleSelectionChange(val) {
-                this.multipleSelection = val;
+            },
+            carHandleCurrentChange(val) {
+                this.carPageNum = val;
+                this.carConditionPage();
+
             },
 
 
-            //查看详情跳转
-            orderHandleView(index, row) {
-                this.$router.push({path:`/order`});
+            //订单记录分页
+            orderRecordPage(){
+                userDetails.orderRecordPage(this.orderPageNum,this.orderPageSize,this.user.id,this.orderParam).then(res=>{
+                    console.log("-----"+res)
+                    this.orderData = res.data.records;
+                    this.orderTotal = res.data.total;
+                })
+            },
 
+            //订单记录查询
+            orderSelect(){
+
+            },
+            //订单记录重置
+            orderClear(){
+                this.orderParam = {};
+                this.orderRecordPage();
             },
             //订单记录分页
             orderHandleSizeChange(val){
-
+                this.orderPageSize = val
+                this.orderRecordPage();
             },
             orderHandleCurrentChange(val){
+                this.orderPageNum = val
+                this.orderRecordPage();
 
             },
-            //车辆情况分页
-            carHandleSizeChange(val){
+            handleView(row){
+                this.$route.push({
+                    name:'Order',
+                    params:{data:row}
+                })
 
             },
-            carHandleCurrentChange(val){
+            //刷新
+            replacement() {
 
-            },
-
-            //分页
-            handleSizeChange(val) {
-                this.param.pageSize = val;
-                this.findPage();
-            },
-            handleCurrentChange(val) {
-                this.param.pageNum = val;
-                this.findPage();
             },
 
         },
         created() {
-            this.courseId = this.$route.params.id
-            console.log('',this.courseId)
-
+            this.user = this.$route.params.data;
+            this.accountPage();
+            this.carConditionPage();
+            this.orderRecordPage();
 
         }
-    };
+    }
 </script>
-<style lang="less" scoped>
-
-</style>

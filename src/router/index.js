@@ -31,6 +31,7 @@ import Attendance from "@/views/statistics/Attendance.vue";
 import Payment from "@/views/statistics/Payment";
 import Home from "@/views/sys/Home";
 import RoadStatistics from "@/views/statistics/RoadStatistics";
+import RealTimeRoadStatus from "@/views/road/RealTimeRoadStatus";
 
 Vue.use(VueRouter)
 
@@ -159,7 +160,7 @@ const routes = [
                 component: Information
             },
             {
-                path:`/userDetails/:id`,
+                path:`/userDetails`,
                 name: "UserDetails",
                 component: UserDetails
             },
@@ -223,8 +224,12 @@ const routes = [
                 path:'/roadStatistics',
                 name: "RoadStatistics",
                 component: RoadStatistics
+            },
+            {
+                path:'/realTimeRoadStatus',
+                name: "RealTimeRoadStatus",
+                component: RealTimeRoadStatus
             }
-
         ]
     }
 ]

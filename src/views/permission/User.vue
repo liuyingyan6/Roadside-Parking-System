@@ -21,6 +21,7 @@
                             <el-input v-model="param.phone" placeholder="手机号码"></el-input>
                         </el-form-item>
 
+
                         <el-select v-model="param.vx" placeholder="微信绑定">
                             <el-option label="已绑定" value="1"></el-option>
                             <el-option label="未绑定" value="0"></el-option>
@@ -124,7 +125,7 @@
                             <el-button-group>
                                 <el-button
                                         type="primary" icon="el-icon-view" plain
-                                        @click="handleView(scope.$index,scope.row)">查看详情
+                                        @click="handleView(scope.row)">查看详情
                                 </el-button>
 
                                 <el-button
@@ -175,8 +176,11 @@
         methods: {
 
             //查看详情跳转
-            handleView(index, row) {
-                this.$router.push({path:`/userDetails/${row.id}`});
+            handleView(row) {
+                this.$router.push({
+                    name: 'UserDetails',
+                    params: { data: row }
+                });
             },
 
             //分页查询所有用户
